@@ -1,0 +1,6 @@
+{
+  "_note": "실제 고객 리뷰만 넣습니다. 지어내거나 고쳐 쓰지 마세요. 빈 목록이면 사이트에 리뷰 영역이 표시되지 않습니다. image는 static/reviews/에 넣은 리뷰 캡처(이름·사진 가림) 경로.",
+  "google_review_url": null,
+  "naver_place_url": null,
+  "reviews": []
+}

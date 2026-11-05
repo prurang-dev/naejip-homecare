@@ -18,6 +18,7 @@ SITE_URL = os.environ.get('SITE_URL', '').rstrip('/')
 INDEX = os.environ.get('INDEX') == '1'   # 도메인 확정 전까지는 검색 노출 차지
 
 B = json.load(open(os.path.join(ROOT, 'data/business.json'), encoding='utf-8'))
+RV = json.load(open(os.path.join(ROOT, 'data/reviews.json'), encoding='utf-8'))
 TEL = re.sub(r'[^0-9]', '', B['phone'])
 SMS = re.sub(r'[^0-9]', '', B['sms'])
 
@@ -276,6 +277,24 @@ def home():
 
     cases_html = ''.join(case_card(c) for c in CASES[:6])
 
+    reviews_html = ''
+    if RV.get('reviews'):
+        cards = []
+        for r in RV['reviews'][:6]:
+            stars = '★' * int(r.get('rating', 5))
+            img = f'<img src="{u(r["image"])}" alt="{esc(r.get("source", ""))} 실제 리뷰 캡처" loading="lazy">' if r.get('image') else ''
+            cards.append(f'<figure class="rv"><p class="rv-stars" aria-label="별점 {len(stars)}점">{stars}</p>'
+                         f'<blockquote>{esc(r.get("text", ""))}</blockquote>{img}'
+                         f'<figcaption>{esc(r.get("area", ""))} · {esc(r.get("source", ""))} 리뷰</figcaption></figure>')
+        links = ''.join(f'<a class="more" href="{esc(url)}">{label} 리뷰 전체 보기 {icon("arrow", 16)}</a>'
+                        for label, url in [('구글', RV.get('google_review_url')), ('네이버', RV.get('naver_place_url'))] if url)
+        reviews_html = f'''<section class="sec" id="reviews">
+  <div class="wrap">
+    <div class="sec-head"><div><p class="eyebrow">고객 리뷰</p><h2 class="h2">직접 맡겨 보신 분들의 이야기</h2></div><div>{links}</div></div>
+    <div class="rv-grid">{''.join(cards)}</div>
+  </div>
+</section>'''
+
     steps = [('전화·문자 상담', '증상을 말씀해 주세요. 사진을 보내 주시면 더 정확합니다.'),
              ('방문 · 원인 확인', '장비로 새는 곳, 막힌 곳을 먼저 찾습니다.'),
              ('견적 안내 후 작업', '확인한 원인과 작업 범위를 설명드리고 시작합니다.'),
@@ -342,6 +361,7 @@ def home():
   </div>
 </section>
 
+{reviews_html}
 <section class="sec sec-soft">
   <div class="wrap">
     <p class="eyebrow">진행 과정</p>

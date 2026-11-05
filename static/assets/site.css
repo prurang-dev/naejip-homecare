@@ -206,3 +206,12 @@ p{margin:0}
   .st-n{top:20px;left:20px}
   .area{grid-template-columns:1fr 1fr;gap:64px}
 }
+
+/* reviews */
+.rv-grid{display:grid;gap:14px;margin-top:22px}
+.rv{margin:0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;gap:10px}
+.rv-stars{color:#F5A524;font-size:18px;letter-spacing:2px}
+.rv blockquote{margin:0;font-size:16px;line-height:1.7;color:var(--text)}
+.rv img{border-radius:12px;border:1px solid var(--line)}
+.rv figcaption{font-size:13.5px;color:var(--muted);font-weight:600}
+@media (min-width:960px){.rv-grid{grid-template-columns:repeat(3,1fr)}}
