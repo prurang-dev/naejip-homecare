@@ -1,0 +1,36 @@
+name: Deploy site
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build
+        # 도메인 구매 전: GitHub Pages 주소(/저장소이름/)로 빌드, 검색 노출 차단
+        # 도메인 연결 후: BASE=/ SITE_URL=https://도메인.kr INDEX=1 로 바꾸기
+        run: BASE="/${{ github.event.repository.name }}/" python3 build.py
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

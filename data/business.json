@@ -1,0 +1,18 @@
+{
+  "_note": "업체 정보는 이 파일 한 곳에서만 관리합니다. [ ] 표시와 null 값은 동생에게 확인 후 채우세요. null인 항목은 사이트에 표시되지 않습니다.",
+  "name": "OO설비",
+  "name_en": "OO Plumbing",
+  "tagline": "누수탐지 · 하수구 · 배관 공사",
+  "phone": "010-0000-0000",
+  "sms": "010-0000-0000",
+  "hours": "24시간 상담",
+  "areas": ["평택", "천안", "오산", "화성", "용인"],
+  "areas_more": ["송탄", "고덕신도시", "팽성", "수원"],
+  "owner": "[대표자명]",
+  "biz_no": "[000-00-00000]",
+  "address": "[사업장 주소]",
+  "arrival_minutes": null,
+  "warranty_months": null,
+  "google_rating": null,
+  "naver_blog": "https://blog.naver.com/prumom"
+}
