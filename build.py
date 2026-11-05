@@ -374,7 +374,7 @@ def home():
   <div class="wrap area">
     <div>
       <p class="eyebrow">출동 지역</p>
-      <h2 class="h2">{esc(B['region'])}<br>어디든 갑니다</h2>
+      <h2 class="h2">평택을 중심으로<br>{esc(B['region'])} 출동</h2>
       <p class="lead">{esc(' · '.join(B['areas']))}을 중심으로 출동합니다.</p>
       <ul class="chips">{area_html}</ul>
     </div>

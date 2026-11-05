@@ -18,7 +18,9 @@
     "팽성",
     "화성",
     "용인",
-    "천안"
+    "천안",
+    "서울",
+    "경기 전역"
   ],
   "owner": "[대표자명]",
   "biz_no": "[000-00-00000]",
@@ -27,5 +29,5 @@
   "warranty_months": null,
   "google_rating": null,
   "naver_blog": "https://blog.naver.com/prumom",
-  "region": "서울 남부 · 수도권"
+  "region": "서울 · 수도권 전 지역"
 }
