@@ -6,7 +6,7 @@
 - `data/business.json` — 업체명·전화·주소 등 (한 곳에서만 관리, `[ ]`·null은 확인 후 채움)
 - `content/cases/*.md` — 시공 사례 글 (1 현장 = 1 파일)
 - `static/` — CSS, 사례 사진·영상
-- `drafts/naver/` — 네이버 블로그 발행용 초안 (사이트에는 안 나감)
+- `drafts/naver/` — 네이버 블로그 초안 (공개 저장소에 올리지 않음, 로컬·승인함에서만 관리)
 - `inbox/` — 동생이 보낸 현장 사진·메모 대기함
 - `build.py` — `python3 build.py` → `dist/`
 
