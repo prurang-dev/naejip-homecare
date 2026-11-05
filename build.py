@@ -145,7 +145,10 @@ def ld_business():
 def page(title, desc, path, body, og_image=None):
     canonical = (SITE_URL + u(path)) if SITE_URL else ''
     robots = 'index,follow' if INDEX else 'noindex,nofollow'
-    og = f'<meta property="og:image" content="{esc((SITE_URL or "") + u(og_image))}">' if og_image else ''
+    og_image = og_image or 'og/default.jpg'
+    og = (f'<meta property="og:image" content="{esc((SITE_URL or "") + u(og_image))}">'
+          '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">'
+          f'<meta property="og:url" content="{esc(canonical)}">')
     canon = f'<link rel="canonical" href="{esc(canonical)}">' if canonical else ''
     return f'''<!doctype html>
 <html lang="ko">
@@ -160,7 +163,11 @@ def page(title, desc, path, body, og_image=None):
 <meta property="og:title" content="{esc(title)}">
 <meta property="og:description" content="{esc(desc)}">
 {og}
+<meta property="og:site_name" content="{esc(B['name'])}">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0B1F3A">
+<link rel="icon" href="{u('favicon.svg')}" type="image/svg+xml">
+<link rel="apple-touch-icon" href="{u('apple-touch-icon.png')}">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="{u('assets/site.css')}">
@@ -170,7 +177,7 @@ def page(title, desc, path, body, og_image=None):
 <a class="skip" href="#main">본문으로 건너뛰기</a>
 <header class="top">
   <div class="wrap top-in">
-    <a class="logo" href="{u('')}">{esc(B['name'])}<span>{esc(B['tagline'])}</span></a>
+    <a class="logo" href="{u('')}"><img class="logo-mark" src="{u('logo.svg')}" alt="" width="40" height="40"><span class="logo-text">{esc(B['name'])}<span>{esc(B['tagline'])}</span></span></a>
     <nav class="nav" aria-label="주 메뉴">
       <a href="{u('')}#symptoms">증상별 상담</a>
       <a href="{u('')}#equipment">탐지 장비</a>
@@ -185,7 +192,7 @@ def page(title, desc, path, body, og_image=None):
 </main>
 <footer class="foot">
   <div class="wrap">
-    <p class="foot-name">{esc(B['name'])}</p>
+    <p class="foot-name"><img src="{u('logo.svg')}" alt="" width="28" height="28">{esc(B['name'])}</p>
     <p>대표 {esc(B['owner'])} · 사업자등록번호 {esc(B['biz_no'])}</p>
     <p>{esc(B['address'])} · 전화 <a href="tel:{TEL}">{esc(B['phone'])}</a></p>
     <p>출동 지역: {esc(B['region'])} ({esc(' · '.join(B['areas']))} 외 {esc(' · '.join(B['areas_more']))})</p>
@@ -364,7 +371,7 @@ def home():
 '''
     title = f"{B['name']} | {' · '.join(B['areas'])} 누수탐지 · 하수구 · 배관"
     desc = f"{B['region']} {' · '.join(B['areas'])} 누수탐지, 하수구 막힘, 배관 공사. 가압·가스·열화상 장비로 원인을 찾고 필요한 곳만 고칩니다. {B['phone']}"
-    return page(title, desc, '', body, og_image=hero_pics[0]['cover'] if hero_pics else None)
+    return page(title, desc, '', body, og_image='og/default.jpg')
 
 
 # ---------------- case list / detail ----------------
@@ -411,7 +418,8 @@ def case_page(c):
     <div class="case-grid three">{''.join(case_card(x) for x in related)}</div>
   </div>
 </article>'''
-    return page(f"{c['title']} | {B['name']}", c.get('description', ''), f"case/{c['slug']}/", body, og_image=cover)
+    og = f"og/{c['slug']}.jpg" if os.path.exists(os.path.join(ROOT, 'static/og', c['slug'] + '.jpg')) else None
+    return page(f"{c['title']} | {B['name']}", c.get('description', ''), f"case/{c['slug']}/", body, og_image=og)
 
 
 def write(path, content):
