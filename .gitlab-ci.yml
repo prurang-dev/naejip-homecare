@@ -1,0 +1,14 @@
+# GitLab Pages 배포: main에 push하면 자동으로 빌드해 올린다.
+# 도메인 구매 전: 프로젝트 주소(/프로젝트이름/)로 빌드, 검색 노출 차단
+# 도메인 연결 후: BASE=/ SITE_URL=https://도메인.kr INDEX=1 로 바꾸기
+image: python:3.12-slim
+pages:
+  stage: deploy
+  script:
+    - BASE="/${CI_PROJECT_NAME}/" python3 build.py
+    - rm -rf public && mv dist public
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
