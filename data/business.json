@@ -8,16 +8,17 @@
   "hours": "24시간 상담",
   "areas": [
     "평택",
-    "천안",
     "오산",
-    "화성",
-    "용인"
+    "수원",
+    "동탄"
   ],
   "areas_more": [
     "송탄",
-    "고덕신도시",
+    "고덕",
     "팽성",
-    "수원"
+    "화성",
+    "용인",
+    "천안"
   ],
   "owner": "[대표자명]",
   "biz_no": "[000-00-00000]",
@@ -25,5 +26,6 @@
   "arrival_minutes": null,
   "warranty_months": null,
   "google_rating": null,
-  "naver_blog": "https://blog.naver.com/prumom"
+  "naver_blog": "https://blog.naver.com/prumom",
+  "region": "서울 남부 · 수도권"
 }

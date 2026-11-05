@@ -133,7 +133,7 @@ def ld_business():
         '@context': 'https://schema.org', '@type': 'Plumber',
         'name': B['name'], 'telephone': B['phone'],
         'areaServed': [{'@type': 'City', 'name': a} for a in B['areas'] + B['areas_more']],
-        'description': f"{'·'.join(B['areas'])} {B['tagline']}",
+        'description': f"{B['region']} {'·'.join(B['areas'])} {B['tagline']}",
     }
     if SITE_URL:
         d['url'] = SITE_URL + BASE
@@ -188,7 +188,7 @@ def page(title, desc, path, body, og_image=None):
     <p class="foot-name">{esc(B['name'])}</p>
     <p>대표 {esc(B['owner'])} · 사업자등록번호 {esc(B['biz_no'])}</p>
     <p>{esc(B['address'])} · 전화 <a href="tel:{TEL}">{esc(B['phone'])}</a></p>
-    <p>출동 지역: {esc(' · '.join(B['areas']))} 외 {esc(' · '.join(B['areas_more']))}</p>
+    <p>출동 지역: {esc(B['region'])} ({esc(' · '.join(B['areas']))} 외 {esc(' · '.join(B['areas_more']))})</p>
     <p class="foot-small">© {esc(B['name'])}</p>
   </div>
 </footer>
@@ -291,7 +291,7 @@ def home():
 <section class="hero">
   <div class="wrap hero-in">
     <div class="hero-text">
-      <p class="live"><span class="dot" aria-hidden="true"></span>{esc(B['hours'])} · {esc(' · '.join(B['areas']))} 출동</p>
+      <p class="live"><span class="dot" aria-hidden="true"></span>{esc(B['hours'])} · {esc(B['region'])} 출동</p>
       <h1>물이 새거나 막혔나요?<br><em>지금 전화 주세요.</em></h1>
       <p class="hero-sub">누수탐지 · 하수구 · 배관 공사. 장비로 원인부터 찾고, 필요한 곳만 고칩니다.</p>
       <div class="hero-cta">
@@ -347,7 +347,8 @@ def home():
   <div class="wrap area">
     <div>
       <p class="eyebrow">출동 지역</p>
-      <h2 class="h2">평택을 중심으로<br>인근 지역 어디든 갑니다</h2>
+      <h2 class="h2">{esc(B['region'])}<br>어디든 갑니다</h2>
+      <p class="lead">{esc(' · '.join(B['areas']))}을 중심으로 출동합니다.</p>
       <ul class="chips">{area_html}</ul>
     </div>
     <div class="faqs">
@@ -358,11 +359,11 @@ def home():
 </section>
 
 <section class="sec">
-  <div class="wrap">{call_block('물 새는 건 기다릴수록 피해가 커집니다', f"{esc(B['hours'])} · {esc(' · '.join(B['areas']))} 출동")}</div>
+  <div class="wrap">{call_block('물 새는 건 기다릴수록 피해가 커집니다', f"{esc(B['hours'])} · {esc(B['region'])} 출동")}</div>
 </section>
 '''
-    title = f"{B['name']} | {' · '.join(B['areas'][:3])} 누수탐지 · 하수구 · 배관"
-    desc = f"{' · '.join(B['areas'])} 누수탐지, 하수구 막힘, 배관 공사. 가압·가스·열화상 장비로 원인을 찾고 필요한 곳만 고칩니다. {B['phone']}"
+    title = f"{B['name']} | {' · '.join(B['areas'])} 누수탐지 · 하수구 · 배관"
+    desc = f"{B['region']} {' · '.join(B['areas'])} 누수탐지, 하수구 막힘, 배관 공사. 가압·가스·열화상 장비로 원인을 찾고 필요한 곳만 고칩니다. {B['phone']}"
     return page(title, desc, '', body, og_image=hero_pics[0]['cover'] if hero_pics else None)
 
 
@@ -405,7 +406,7 @@ def case_page(c):
     <div class="prose">{md_to_html(c['body'])}</div>
     <h2 class="h3">현장 사진</h2>
     <div class="gallery">{video}{gallery}</div>
-    {call_block('같은 증상으로 고민 중이신가요?', f"{esc(case_place(c))}을 비롯해 {esc(' · '.join(B['areas']))} 출동")}
+    {call_block('같은 증상으로 고민 중이신가요?', f"{esc(case_place(c))}을 비롯해 {esc(B['region'])} 출동")}
     <h2 class="h3">다른 현장</h2>
     <div class="case-grid three">{''.join(case_card(x) for x in related)}</div>
   </div>
