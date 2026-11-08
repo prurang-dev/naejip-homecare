@@ -5,7 +5,7 @@
   BASE=/repo/ python3 build.py     # GitHub Pages 프로젝트 주소용
   SITE_URL=https://xxx.kr INDEX=1 python3 build.py   # 정식 도메인 + 검색 노출 허용
 
-콘텐츠: content/cases/*.md  · 업체 정보: data/business.json · 이미지/영상: static/
+콘텐츠: content/cases/*.md (현장) · content/guides/*.md (설비 상식) · 업체 정보: data/business.json · 이미지/영상: static/
 """
 import html, json, os, re, shutil, glob
 
@@ -104,6 +104,10 @@ def sort_key(c):
 CASES = sorted([parse_md(p) for p in glob.glob(os.path.join(ROOT, 'content/cases/*.md'))],
                key=sort_key, reverse=True)
 BY_SLUG = {c['slug']: c for c in CASES}
+GUIDES = sorted([parse_md(p) for p in glob.glob(os.path.join(ROOT, 'content/guides/*.md'))],
+                key=sort_key, reverse=True)
+GUIDE_CAT = {'leak': '누수', 'drain': '하수구·막힘', 'pipe': '배관', 'heating': '난방·보일러배관',
+             'bath': '욕실·방수', 'season': '계절 관리', 'cost': '비용·책임'}
 
 
 # ---------------- icons ----------------
@@ -151,6 +155,7 @@ def page(title, desc, path, body, og_image=None):
           '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">'
           f'<meta property="og:url" content="{esc(canonical)}">')
     canon = f'<link rel="canonical" href="{esc(canonical)}">' if canonical else ''
+    guide_nav = f'<a href="{u("guide/")}">설비 상식</a>' if GUIDES else ''
     return f'''<!doctype html>
 <html lang="ko">
 <head>
@@ -184,6 +189,7 @@ def page(title, desc, path, body, og_image=None):
       <a href="{u('')}#symptoms">증상별 상담</a>
       <a href="{u('')}#equipment">탐지 장비</a>
       <a href="{u('case/')}">시공 사례</a>
+      {guide_nav}
       <a href="{u('')}#area">출동 지역</a>
     </nav>
     <a class="top-call" href="tel:{TEL}">{icon('phone', 18)}<span>{esc(B['phone'])}</span></a>
@@ -362,6 +368,7 @@ def home():
   </div>
 </section>
 
+{guides_home()}
 {reviews_html}
 <section class="sec sec-soft">
   <div class="wrap">
@@ -443,6 +450,87 @@ def case_page(c):
     return page(f"{c['title']} | {B['name']}", c.get('description', ''), f"case/{c['slug']}/", body, og_image=og)
 
 
+# ---------------- guides (설비 상식) ----------------
+def guide_card(g):
+    return f'''<a class="guide-card" href="{u('guide/' + g['slug'] + '/')}">
+  <span class="tag">{esc(GUIDE_CAT.get(g.get('category'), '설비 상식'))}</span>
+  <span class="guide-title">{esc(g['title'])}</span>
+  <span class="guide-desc">{esc(g.get('description', ''))}</span>
+</a>'''
+
+
+def guides_home():
+    if not GUIDES:
+        return ''
+    return f'''<section class="sec">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><p class="eyebrow">설비 상식</p><h2 class="h2">부르기 전에 알아 두면 좋은 것</h2></div>
+      <a class="more" href="{u('guide/')}">전체 {len(GUIDES)}개 보기 {icon('arrow', 16)}</a>
+    </div>
+    <div class="guide-grid">{''.join(guide_card(g) for g in GUIDES[:4])}</div>
+  </div>
+</section>'''
+
+
+def guide_list():
+    body = f'''
+<section class="sec page-head">
+  <div class="wrap">
+    <p class="eyebrow">설비 상식</p>
+    <h1 class="h1">누수 · 하수구 · 배관, 알아 두면 좋은 것</h1>
+    <p class="lead">현장에서 자주 받는 질문을 정리했습니다.</p>
+    <div class="guide-grid">{''.join(guide_card(g) for g in GUIDES)}</div>
+  </div>
+</section>
+<section class="sec"><div class="wrap">{call_block('직접 해결이 어렵다면', '사진을 문자로 보내 주시면 먼저 봐 드립니다.')}</div></section>'''
+    return page(f"설비 상식 | {B['name']}", "누수·하수구·배관 문제를 겪을 때 알아 두면 좋은 정보", 'guide/', body)
+
+
+def ld_article(g):
+    d = {'@context': 'https://schema.org', '@type': 'Article', 'headline': g['title'],
+         'description': g.get('description', ''), 'inLanguage': 'ko',
+         'author': {'@type': 'Organization', 'name': B['name']},
+         'publisher': {'@type': 'Organization', 'name': B['name']}}
+    if g.get('date'):
+        d['datePublished'] = g['date']
+    if SITE_URL:
+        d['mainEntityOfPage'] = SITE_URL + u(f"guide/{g['slug']}/")
+    return json.dumps(d, ensure_ascii=False)
+
+
+def guide_page(g):
+    rel_cases = [BY_SLUG[x.strip()] for x in g.get('related_cases', '').split(',') if x.strip() in BY_SLUG]
+    if not rel_cases:
+        rel_cases = [c for c in CASES if c.get('service') == g.get('service')][:3]
+    other = [x for x in GUIDES if x['slug'] != g['slug'] and x.get('category') == g.get('category')][:3]
+    if len(other) < 3:
+        other += [x for x in GUIDES if x['slug'] != g['slug'] and x not in other][:3 - len(other)]
+    cover = g.get('cover', '')
+    cover_html = f'<img class="cover" src="{u(cover)}" alt="{esc(g["title"])}" decoding="async">' if cover else ''
+    cases_html = (f'<h2 class="h3">관련 시공 사례</h2><div class="case-grid three">{"".join(case_card(c) for c in rel_cases[:3])}</div>'
+                  if rel_cases else '')
+    other_html = (f'<h2 class="h3">다른 설비 상식</h2><div class="guide-grid">{"".join(guide_card(x) for x in other)}</div>'
+                  if other else '')
+    body = f'''
+<article class="sec page-head">
+  <div class="wrap narrow">
+    <nav class="crumb" aria-label="위치"><a href="{u('')}">홈</a> / <a href="{u('guide/')}">설비 상식</a></nav>
+    <p class="case-meta big"><span class="tag">{esc(GUIDE_CAT.get(g.get('category'), '설비 상식'))}</span><span>{esc(g.get('date', ''))}</span></p>
+    <h1 class="h1">{esc(g['title'])}</h1>
+    <p class="lead">{esc(g.get('description', ''))}</p>
+    {cover_html}
+    <div class="prose">{md_to_html(g['body'])}</div>
+    {call_block('혼자 해결이 어렵다면 전화 주세요', f"{esc(B['hours'])} · {esc(B['region'])} 출동")}
+    {cases_html}
+    {other_html}
+  </div>
+</article>
+<script type="application/ld+json">{ld_article(g)}</script>'''
+    og = f"og/{g['slug']}.jpg" if os.path.exists(os.path.join(ROOT, 'static/og', g['slug'] + '.jpg')) else None
+    return page(f"{g['title']} | {B['name']}", g.get('description', ''), f"guide/{g['slug']}/", body, og_image=og)
+
+
 def write(path, content):
     full = os.path.join(OUT, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
@@ -457,18 +545,23 @@ def main():
     write('case/index.html', case_list())
     for c in CASES:
         write(f"case/{c['slug']}/index.html", case_page(c))
+    if GUIDES:
+        write('guide/index.html', guide_list())
+        for g in GUIDES:
+            write(f"guide/{g['slug']}/index.html", guide_page(g))
     write('404.html', page(f"페이지를 찾을 수 없습니다 | {B['name']}", '', '404.html',
                            f'<section class="sec page-head"><div class="wrap narrow"><h1 class="h1">페이지를 찾을 수 없습니다</h1>'
                            f'<p class="lead"><a href="{u("")}">홈으로 가기</a></p>{call_block("급하신가요?", "바로 전화 주세요.")}</div></section>'))
     if INDEX and SITE_URL:
-        urls = [u('')] + [u('case/')] + [u(f"case/{c['slug']}/") for c in CASES]
+        urls = [u('')] + [u('case/')] + [u(f"case/{c['slug']}/") for c in CASES] + \
+            ([u('guide/')] + [u(f"guide/{g['slug']}/") for g in GUIDES] if GUIDES else [])
         sm = ''.join(f'<url><loc>{esc(SITE_URL + x)}</loc></url>' for x in urls)
         write('sitemap.xml', f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{sm}</urlset>')
         write('robots.txt', f'User-agent: *\nAllow: /\nSitemap: {SITE_URL}{u("sitemap.xml")}\n')
     else:
         write('robots.txt', 'User-agent: *\nDisallow: /\n')
     write('.nojekyll', '')
-    print(f'built {len(CASES)} cases -> {OUT} (BASE={BASE}, INDEX={INDEX})')
+    print(f'built {len(CASES)} cases, {len(GUIDES)} guides -> {OUT} (BASE={BASE}, INDEX={INDEX})')
 
 
 if __name__ == '__main__':

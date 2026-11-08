@@ -6,8 +6,12 @@
 4. 사진에서 사람 얼굴·발·손, 호수, 번호판, 개인 소지품이 보이면 잘라내거나 뺀다. 비슷한 사진은 1장만.
 5. 글마다 "왜 이 작업이 필요한가" 섹션을 1개 이상 넣는다. 같은 유형 현장은 강조점을 다르게.
 6. 네이버 초안은 `drafts/naver/`에 별도 문장으로 쓴다(복붙 금지). 제목 25자 이내, 첫 150자에 결론.
-7. main에 직접 커밋하지 않는다. 항상 브랜치 → PR → 사람 승인.
+7. 게시는 사람 승인 후에만 한다. 초안은 비공개 naejip-ops/pending/에 두고, 텔레그램에서 길남이 승인하면 main에 올린다.
 8. 업체 정보는 `data/business.json`만 고친다.
 9. 새 사례를 추가하면 `python3 tools/make_og.py`로 링크 미리보기 이미지(static/og/)를 다시 만든다.
 10. 네이버 블로그 기존 글을 각색할 때: 원문 복붙 금지, 사이트 사례 형식(어떤 문제 → 원인/왜 → 작업 → 마무리 → 체크리스트)으로 새로 쓰고 지역 키워드는 평택·오산·수원·동탄을 우선한다.
 11. 새 글을 배포한 뒤 IndexNow로 새 URL을 알린다 — OpenSEO 프로젝트 "내집홈케어"의 submit_indexnow_urls 사용 (키: data/indexnow_key.txt, 키 파일: static/<키>.txt).
+12. 설비 상식 글은 `content/guides/<slug>.md` (frontmatter: title, description, category[leak|drain|pipe|heating|bath|season|cost], service[leak|drain|inspect], date, related_cases(쉼표 구분 slug, 선택), cover(선택)). 주소는 /guide/<slug>/.
+13. 설비 상식 주제는 naejip-ops/plan/guide_topics.json 에서만 고른다. 주제마다 대표 키워드가 하나씩 있고, 이미 쓴 글과 대표 키워드·검색 의도가 겹치면 새 글을 쓰지 말고 기존 글을 보강한다.
+14. 설비 상식 글의 사진은 이 사이트에 이미 올라간 실제 현장 사진(static/cases/)만 쓴다. 가격·법·보험 내용은 단정하지 말고 "상황마다 다르다, 확인하라"는 범위로 쓰며, 최신 정보를 검색해 확인한다.
+15. 네이버 초안은 사이트 글과 제목·도입·구성·문장이 모두 달라야 한다. 사이트 글은 정리형(질문 → 답 → 체크리스트), 네이버 글은 현장 이야기형(1인칭, 실제 사진 중심, 짧은 문단). 같은 문장을 그대로 쓰지 않는다.
