@@ -10,4 +10,4 @@
 8. 업체 정보는 `data/business.json`만 고친다.
 9. 새 사례를 추가하면 `python3 tools/make_og.py`로 링크 미리보기 이미지(static/og/)를 다시 만든다.
 10. 네이버 블로그 기존 글을 각색할 때: 원문 복붙 금지, 사이트 사례 형식(어떤 문제 → 원인/왜 → 작업 → 마무리 → 체크리스트)으로 새로 쓰고 지역 키워드는 평택·오산·수원·동탄을 우선한다.
-11. 새 글을 배포한 뒤 IndexNow로 새 URL을 알린다 (키: data/indexnow_key.txt, 키 파일: static/<키>.txt).
+11. 새 글을 배포한 뒤 IndexNow로 새 URL을 알린다 — OpenSEO 프로젝트 "내집홈케어"의 submit_indexnow_urls 사용 (키: data/indexnow_key.txt, 키 파일: static/<키>.txt).
