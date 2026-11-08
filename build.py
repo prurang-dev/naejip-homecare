@@ -166,6 +166,7 @@ def page(title, desc, path, body, og_image=None):
 {og}
 <meta property="og:site_name" content="{esc(B['name'])}">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="naver-site-verification" content="513c391f367bddbff12bcc71363935d685d76473">
 <meta name="theme-color" content="#0B1F3A">
 <link rel="icon" href="{u('favicon.svg')}" type="image/svg+xml">
 <link rel="apple-touch-icon" href="{u('apple-touch-icon.png')}">
