@@ -194,8 +194,8 @@ def page(title, desc, path, body, og_image=None):
 <footer class="foot">
   <div class="wrap">
     <p class="foot-name"><img src="{u('logo.svg')}" alt="" width="28" height="28">{esc(B['name'])}</p>
-    <p>대표 {esc(B['owner'])} · 사업자등록번호 {esc(B['biz_no'])}</p>
-    <p>{esc(B['address'])} · 전화 <a href="tel:{TEL}">{esc(B['phone'])}</a></p>
+    <p>{' · '.join(x for x in [('대표 ' + esc(B['owner'])) if not B['owner'].startswith('[') else '', '사업자등록번호 ' + esc(B['biz_no'])] if x)}</p>
+    <p>{(esc(B['address']) + ' · ') if not B['address'].startswith('[') else ''}전화 <a href="tel:{TEL}">{esc(B['phone'])}</a></p>
     <p>출동 지역: {esc(B['region'])} ({esc(' · '.join(B['areas']))} 외 {esc(' · '.join(B['areas_more']))})</p>
     <p class="foot-small">© {esc(B['name'])}</p>
   </div>
