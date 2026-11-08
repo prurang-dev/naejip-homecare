@@ -144,6 +144,10 @@ def ld_business():
         d['url'] = SITE_URL + BASE
     if not B['address'].startswith('['):
         d['address'] = B['address']
+    same = [x for x in [RV.get('google_profile_url'), RV.get('naver_place_url'), B.get('naver_blog')] if x]
+    if same:
+        d['sameAs'] = same
+    d['openingHours'] = 'Mo-Su 00:00-23:59'
     return json.dumps(d, ensure_ascii=False)
 
 
