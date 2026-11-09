@@ -203,8 +203,21 @@ def page(title, desc, path, body, og_image=None):
       <a href="{u('')}#area">출동 지역</a>
     </nav>
     <a class="top-call" href="tel:{TEL}">{icon('phone', 18)}<span>{esc(B['phone'])}</span></a>
+    <details class="mnav">
+      <summary aria-label="메뉴 열기"><span class="mnav-bars" aria-hidden="true"><i></i><i></i><i></i></span></summary>
+      <nav class="mnav-panel" aria-label="모바일 메뉴">
+        <a href="{u('')}#symptoms">증상별 상담</a>
+        <a href="{u('')}#principles">현장 원칙</a>
+        <a href="{u('')}#equipment">탐지 장비</a>
+        <a href="{u('case/')}">시공 사례</a>
+        {guide_nav}
+        <a href="{u('')}#area">출동 지역</a>
+        <a href="{u('')}#faq">자주 묻는 질문</a>
+      </nav>
+    </details>
   </div>
 </header>
+<script>document.querySelectorAll('.mnav-panel a').forEach(function(a){{a.addEventListener('click',function(){{a.closest('details').removeAttribute('open')}})}})</script>
 <main id="main">
 {body}
 </main>
@@ -400,7 +413,7 @@ def home():
       <p class="lead">{esc(' · '.join(B['areas']))}을 중심으로 출동합니다.</p>
       <ul class="chips">{area_html}</ul>
     </div>
-    <div class="faqs">
+    <div class="faqs" id="faq">
       <p class="eyebrow">자주 묻는 질문</p>
       {faq_html}
     </div>

@@ -22,7 +22,7 @@ p{margin:0}
 
 /* header */
 .top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);backdrop-filter:saturate(1.4) blur(8px);border-bottom:1px solid var(--line)}
-.top-in{display:flex;align-items:center;gap:16px;height:64px}
+.top-in{display:flex;align-items:center;gap:10px;height:64px}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--navy)}
 .logo-mark{width:40px;height:40px;flex:none;border-radius:10px}
 .logo-text{display:flex;flex-direction:column;line-height:1.15;font-weight:800;font-size:19px;letter-spacing:-.02em}
@@ -32,6 +32,17 @@ p{margin:0}
 .nav a:hover{color:var(--navy)}
 .top-call{margin-left:auto;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:12px;background:var(--call);color:#fff;font-weight:800;text-decoration:none;font-size:15px}
 .top-call:hover{background:var(--call-hover)}
+.mnav{position:static}
+.mnav summary{list-style:none;cursor:pointer;width:44px;height:44px;border-radius:12px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;background:#fff}
+.mnav summary::-webkit-details-marker{display:none}
+.mnav-bars{display:grid;gap:4px;width:20px}
+.mnav-bars i{display:block;height:2px;border-radius:2px;background:var(--navy);transition:transform .2s,opacity .2s}
+.mnav[open] .mnav-bars i:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.mnav[open] .mnav-bars i:nth-child(2){opacity:0}
+.mnav[open] .mnav-bars i:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.mnav-panel{position:absolute;left:0;right:0;top:64px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 12px 24px rgba(11,31,58,.08);padding:8px max(20px,env(safe-area-inset-left,0px)) 14px;display:grid}
+.mnav-panel a{display:block;padding:14px 4px;border-bottom:1px solid var(--line);color:var(--navy);font-weight:700;font-size:16.5px;text-decoration:none}
+.mnav-panel a:last-child{border-bottom:0}
 .top-call span{display:none}
 
 /* buttons */
@@ -183,6 +194,7 @@ p{margin:0}
   body{padding-bottom:0}
   .dock{display:none}
   .nav{display:flex}
+  .mnav{display:none}
   .top-call{margin-left:12px}
   .top-call span{display:inline}
   .hero{padding:64px 0 72px}
