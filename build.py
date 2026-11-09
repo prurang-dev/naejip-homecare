@@ -560,6 +560,10 @@ def ld_article(g):
         d['dateModified'] = g['updated']
     if SITE_URL:
         d['mainEntityOfPage'] = SITE_URL + u(f"guide/{g['slug']}/")
+        imgs = [SITE_URL + u(x) for x in [f"guides/{g['slug']}/thumb.jpg", g.get('cover', '')]
+                if x and os.path.exists(os.path.join(ROOT, 'static', x.lstrip('/')))]
+        if imgs:
+            d['image'] = imgs
     return json.dumps(d, ensure_ascii=False)
 
 

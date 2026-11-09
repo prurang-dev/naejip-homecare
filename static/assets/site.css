@@ -237,3 +237,4 @@ p{margin:0}
 .guide-img{display:block;margin:0 -6px 6px;border-radius:12px;overflow:hidden;aspect-ratio:1/1}
 .guide-img img{width:100%;height:100%;object-fit:cover;display:block}
 @media(min-width:720px){.guide-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}}
+.prose .fig img{max-height:640px;object-fit:contain;background:var(--soft)}
