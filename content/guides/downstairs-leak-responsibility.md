@@ -6,6 +6,8 @@ service: leak
 date: 2026-11-09
 updated: 2026-11-09
 related_cases: 2026-11-03-cheonan-buldang-villa-hotwater-leak, 2026-11-yeoksam-villa-bathroom-dye-test, 2026-11-godeok-villa-heating-leak
+thumb_title: "아랫집 천장 누수,|*누가* 고쳐야 할까?"
+thumb_sub: "윗집 탓? 책임은 '물 새는 위치'로 갈립니다"
 cover: /guides/downstairs-leak-responsibility/leak-responsibility-by-location.jpg
 ---
 

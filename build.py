@@ -511,7 +511,10 @@ def ld_case(c):
 
 # ---------------- guides (설비 상식) ----------------
 def guide_card(g):
-    return f'''<a class="guide-card" href="{u('guide/' + g['slug'] + '/')}">
+    thumb = f"guides/{g['slug']}/thumb.jpg"
+    img = (f'<span class="guide-img"><img src="{u(thumb)}" alt="" loading="lazy" decoding="async"></span>'
+           if os.path.exists(os.path.join(ROOT, 'static', thumb)) else '')
+    return f'''<a class="guide-card{' has-img' if img else ''}" href="{u('guide/' + g['slug'] + '/')}">{img}
   <span class="tag">{esc(GUIDE_CAT.get(g.get('category'), '설비 상식'))}</span>
   <span class="guide-title">{esc(g['title'])}</span>
   <span class="guide-desc">{esc(g.get('description', ''))}</span>
