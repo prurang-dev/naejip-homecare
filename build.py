@@ -571,7 +571,9 @@ def guide_page(g):
     if len(other) < 3:
         other += [x for x in GUIDES if x['slug'] != g['slug'] and x not in other][:3 - len(other)]
     cover = g.get('cover', '')
-    cover_html = f'<img class="cover" src="{u(cover)}" alt="{esc(g["title"])}" decoding="async">' if cover else ''
+    # 본문에 이미 들어간 그림이면 상단 대표 이미지로 다시 보여주지 않는다(중복·잘림 방지)
+    cover_html = (f'<img class="cover" src="{u(cover)}" alt="{esc(g["title"])}" decoding="async">'
+                  if cover and cover not in g['body'] else '')
     cases_html = (f'<h2 class="h3">관련 시공 사례</h2><div class="case-grid three">{"".join(case_card(c) for c in rel_cases[:3])}</div>'
                   if rel_cases else '')
     other_html = (f'<h2 class="h3">다른 설비 상식</h2><div class="guide-grid">{"".join(guide_card(x) for x in other)}</div>'
