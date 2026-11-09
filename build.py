@@ -245,6 +245,8 @@ def case_card(c, small=False):
 # ---------------- home ----------------
 def home():
     trust = ['장비로 원인부터 확인', '필요한 곳만 부분 시공', '작업 사진·영상 공유']
+    if B.get('experience_years'):
+        trust.insert(0, f"설비 경력 {B['experience_years']}년")
     if B.get('arrival_minutes'):
         trust.insert(0, f"평균 {B['arrival_minutes']}분 출동")
     if B.get('warranty_months'):
@@ -445,13 +447,60 @@ def case_page(c):
     <div class="prose">{md_to_html(c['body'])}</div>
     <h2 class="h3">현장 사진</h2>
     <div class="gallery">{video}{gallery}</div>
+    {author_box()}
     {call_block('같은 증상으로 고민 중이신가요?', f"{esc(case_place(c))}을 비롯해 {esc(B['region'])} 출동")}
     <h2 class="h3">다른 현장</h2>
     <div class="case-grid three">{''.join(case_card(x) for x in related)}</div>
   </div>
-</article>'''
+</article>
+{ld_case(c)}
+{ld_breadcrumb([('홈', ''), ('시공 사례', 'case/'), (c['title'], f"case/{c['slug']}/")])}'''
     og = f"og/{c['slug']}.jpg" if os.path.exists(os.path.join(ROOT, 'static/og', c['slug'] + '.jpg')) else None
     return page(f"{c['title']} | {B['name']}", c.get('description', ''), f"case/{c['slug']}/", body, og_image=og)
+
+
+# ---------------- author / breadcrumb ----------------
+def author_box():
+    if B['owner'].startswith('['):
+        return ''
+    bits = [f"설비 경력 {B['experience_years']}년" if B.get('experience_years') else '', B.get('experience_note', '')]
+    bits = ' · '.join(b for b in bits if b)
+    return f'''<aside class="author">
+  <img src="{u('logo.svg')}" alt="" width="48" height="48">
+  <div><p class="author-n">글·현장 <b>{esc(B['owner'])}</b> 대표 <span>{esc(B['name'])}</span></p>
+  <p class="author-d">{esc(bits)}. 직접 다녀온 현장과 작업 경험을 바탕으로 씁니다.</p></div>
+</aside>'''
+
+
+def ld_person():
+    if B['owner'].startswith('['):
+        return {'@type': 'Organization', 'name': B['name']}
+    d = {'@type': 'Person', 'name': B['owner'], 'jobTitle': '대표', 'worksFor': {'@type': 'Organization', 'name': B['name']}}
+    if B.get('experience_note'):
+        d['description'] = f"설비 경력 {B.get('experience_years', '')}년, {B['experience_note']}"
+    return d
+
+
+def ld_breadcrumb(items):
+    if not SITE_URL:
+        return ''
+    d = {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
+        {'@type': 'ListItem', 'position': i + 1, 'name': n, 'item': SITE_URL + u(p)} for i, (n, p) in enumerate(items)]}
+    return f'<script type="application/ld+json">{json.dumps(d, ensure_ascii=False)}</script>'
+
+
+def ld_case(c):
+    d = {'@context': 'https://schema.org', '@type': 'Article', 'headline': c['title'],
+         'description': c.get('description', ''), 'inLanguage': 'ko', 'author': ld_person(),
+         'publisher': {'@type': 'Organization', 'name': B['name']}}
+    dt = sort_key(c)
+    if not dt.endswith('-00') and '00' not in dt.split('-')[1:]:
+        d['datePublished'] = dt
+    if c.get('updated'):
+        d['dateModified'] = c['updated']
+    if c.get('cover') and SITE_URL:
+        d['image'] = SITE_URL + u(c['cover'].lstrip('/'))
+    return f'<script type="application/ld+json">{json.dumps(d, ensure_ascii=False)}</script>'
 
 
 # ---------------- guides (설비 상식) ----------------
@@ -494,10 +543,12 @@ def guide_list():
 def ld_article(g):
     d = {'@context': 'https://schema.org', '@type': 'Article', 'headline': g['title'],
          'description': g.get('description', ''), 'inLanguage': 'ko',
-         'author': {'@type': 'Organization', 'name': B['name']},
+         'author': ld_person(),
          'publisher': {'@type': 'Organization', 'name': B['name']}}
     if g.get('date'):
         d['datePublished'] = g['date']
+    if g.get('updated'):
+        d['dateModified'] = g['updated']
     if SITE_URL:
         d['mainEntityOfPage'] = SITE_URL + u(f"guide/{g['slug']}/")
     return json.dumps(d, ensure_ascii=False)
@@ -525,12 +576,14 @@ def guide_page(g):
     <p class="lead">{esc(g.get('description', ''))}</p>
     {cover_html}
     <div class="prose">{md_to_html(g['body'])}</div>
+    {author_box()}
     {call_block('혼자 해결이 어렵다면 전화 주세요', f"{esc(B['hours'])} · {esc(B['region'])} 출동")}
     {cases_html}
     {other_html}
   </div>
 </article>
-<script type="application/ld+json">{ld_article(g)}</script>'''
+<script type="application/ld+json">{ld_article(g)}</script>
+{ld_breadcrumb([('홈', ''), ('설비 상식', 'guide/'), (g['title'], f"guide/{g['slug']}/")])}'''
     og = f"og/{g['slug']}.jpg" if os.path.exists(os.path.join(ROOT, 'static/og', g['slug'] + '.jpg')) else None
     return page(f"{g['title']} | {B['name']}", g.get('description', ''), f"guide/{g['slug']}/", body, og_image=og)
 
