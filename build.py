@@ -72,6 +72,12 @@ def md_to_html(md):
     for block in re.split(r'\n\s*\n', md.strip()):
         lines = block.strip().split('\n')
         first = lines[0]
+        m = re.match(r'^!\[(.*?)\]\((.+?)\)$', first)
+        if m and len(lines) <= 2:
+            cap = inline(lines[1]) if len(lines) == 2 else esc(m.group(1))
+            out.append(f'<figure class="fig"><img src="{u(m.group(2))}" alt="{esc(m.group(1))}" loading="lazy" decoding="async">'
+                       f'<figcaption>{cap}</figcaption></figure>')
+            continue
         if first.startswith('## '):
             out.append(f'<h2>{inline(first[3:])}</h2>')
             if len(lines) > 1:

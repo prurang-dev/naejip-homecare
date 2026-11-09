@@ -229,3 +229,7 @@ p{margin:0}
 .author-n{margin:0;font-size:15.5px;color:var(--text)}
 .author-n span{color:var(--muted);font-size:13.5px;margin-left:4px}
 .author-d{margin:4px 0 0;font-size:14.5px;color:var(--sub);line-height:1.6}
+/* 본문 그림 */
+.prose .fig{margin:24px 0}
+.prose .fig img{width:100%;height:auto;border-radius:14px;border:1px solid var(--line);display:block}
+.prose .fig figcaption{font-size:14px;color:var(--muted);margin-top:8px;line-height:1.5}

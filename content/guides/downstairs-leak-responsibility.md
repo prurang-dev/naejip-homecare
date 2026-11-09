@@ -4,8 +4,9 @@ description: "아랫집 누수 책임은 '윗집이니까 무조건 윗집'이 �
 category: cost
 service: leak
 date: 2026-11-09
+updated: 2026-11-09
 related_cases: 2026-11-03-cheonan-buldang-villa-hotwater-leak, 2026-11-yeoksam-villa-bathroom-dye-test, 2026-11-godeok-villa-heating-leak
-cover: /cases/2026-11-03-cheonan-hotwater-leak/gauge-end.jpg
+cover: /guides/downstairs-leak-responsibility/leak-responsibility-by-location.jpg
 ---
 
 ## 결론부터: 누가 고쳐야 하나요?
@@ -19,6 +20,9 @@ cover: /cases/2026-11-03-cheonan-hotwater-leak/gauge-end.jpg
 - **건물 공용 배관, 외벽, 옥상** — 개인 집이 아닌 공용부분이면 관리단이나 입주자대표회의 쪽에 이야기해야 합니다.
 - **새로 지은 건물의 시공 불량** — 하자보수 기간 안이면 시공사·분양사에 요구할 수 있는 경우도 있습니다.
 
+![아랫집 누수 원인 위치별 책임 그림: 위층 집 안 배관과 위층 욕실은 위층, 공용 배관·외벽·옥상은 관리단, 신축 시공 불량은 시공사](/guides/downstairs-leak-responsibility/leak-responsibility-by-location.jpg)
+누수 원인 위치에 따라 보통 누가 고치는지 정리한 그림입니다.
+
 민법은 건물 같은 시설의 하자로 남에게 손해가 났을 때, 먼저 그 집에 사는 사람(점유자)이, 점유자가 관리에 주의를 다했다면 집주인(소유자)이 책임지도록 정하고 있습니다. 세입자가 사는 집이라면 **세입자와 집주인 모두에게 바로 알리는 것**이 좋습니다. 다만 실제 책임 비율은 계약 내용과 상황마다 다르니, 다툼이 생기면 법률 상담을 받아 보세요.
 
 ## 왜 원인 확인부터 해야 하나요?
@@ -26,6 +30,9 @@ cover: /cases/2026-11-03-cheonan-hotwater-leak/gauge-end.jpg
 원인을 모르면 "우리 집은 물 새는 데 없다"는 말과 "윗집에서 내려온다"는 말이 부딪히기만 합니다. 위층 집 안에 물기가 전혀 안 보이는데 바닥 속 배관에서 새는 경우도 흔합니다.
 
 천안 불당동 빌라 현장에서도 위층 집 안은 멀쩡해 보였지만, 온수 배관에 압력을 걸자 11초 만에 압력이 떨어져 배관 누수를 확인했습니다. 서울 역삼동 빌라 현장은 담수·색소 테스트로 방수층이 아니라 하수관 이탈이 원인임을 가려냈습니다. 이렇게 **테스트로 확인한 결과**가 있어야 누가 고칠지, 어디를 얼마나 고칠지 이야기가 됩니다.
+
+![천안 불당동 현장 온수 배관 가압 테스트, 디지털 압력계 3.90bar](/cases/2026-11-03-cheonan-hotwater-leak/gauge-end.jpg)
+실제 현장(천안 불당동): 4.01bar로 시작한 압력이 11초 만에 3.90bar로 떨어져 온수 배관 누수를 확인했습니다.
 
 ## 보험으로 처리할 수 있나요?
 
@@ -49,6 +56,8 @@ cover: /cases/2026-11-03-cheonan-hotwater-leak/gauge-end.jpg
 - 천장 등 전기 주변으로 물이 번질 때
 
 ## 아랫집 누수, 이렇게 챙기세요
+
+![아랫집 누수 대처 순서 5단계: 사진 기록, 알리기, 장비로 원인 확인, 책임·보험 정리, 수리·서류 보관](/guides/downstairs-leak-responsibility/downstairs-leak-steps.jpg)
 
 - 물 샌 날짜와 위치를 사진으로 남겼나요?
 - 위층(세입자라면 집주인까지)과 관리사무소에 알렸나요?
