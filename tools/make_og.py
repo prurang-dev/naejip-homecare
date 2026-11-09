@@ -27,6 +27,16 @@ def card_case(c):
 <div style="flex:1;min-width:0"><div style="font-size:58px;font-weight:800;letter-spacing:-2px">{B['name']}</div>
 <div style="font-size:32px;color:#DCE6F5;font-weight:600;margin-top:6px">{build.case_place(c)} · {build.SERVICE.get(c.get('service'),'')} 실제 현장</div></div>
 <div style="background:#E2510C;border-radius:18px;padding:16px 26px;font-size:38px;font-weight:800;white-space:nowrap">☎ {B['phone']}</div></div></div>'''
+def card_guide(g):
+    cover = g.get('cover')
+    bg = f'<img src="{data_uri(os.path.join(ROOT, "static", cover.lstrip("/")))}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.35">' if cover else ''
+    return f'''<div style="width:1200px;height:630px;position:relative;font-family:{FONT};color:#fff;overflow:hidden;background:#0B1F3A">{bg}
+<div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,31,58,.97) 0%,rgba(11,31,58,.85) 60%,rgba(11,31,58,.6) 100%)"></div>
+<div style="position:absolute;left:70px;right:70px;top:70px"><div style="display:inline-block;background:#E2510C;border-radius:999px;padding:8px 22px;font-size:28px;font-weight:800">설비 상식</div>
+<div style="font-size:60px;font-weight:800;letter-spacing:-2px;line-height:1.25;margin-top:28px;word-break:keep-all">{g['title']}</div></div>
+<div style="position:absolute;left:70px;right:70px;bottom:50px;display:flex;align-items:center;gap:22px">
+<div style="width:84px;height:84px;flex:none">{logo}</div><div style="flex:1;font-size:42px;font-weight:800">{B['name']}</div>
+<div style="background:#E2510C;border-radius:18px;padding:14px 24px;font-size:36px;font-weight:800;white-space:nowrap">☎ {B['phone']}</div></div></div>'''
 with sync_playwright() as p:
     br = p.chromium.launch(); pg = br.new_page(viewport={'width':1200,'height':630})
     def shot(html, out):
@@ -35,8 +45,10 @@ with sync_playwright() as p:
     shot(card_default(), os.path.join(ROOT, 'static/og/default.jpg'))
     for c in build.CASES:
         shot(card_case(c), os.path.join(ROOT, f"static/og/{c['slug']}.jpg"))
+    for g in build.GUIDES:
+        shot(card_guide(g), os.path.join(ROOT, f"static/og/{g['slug']}.jpg"))
     pg.set_viewport_size({'width':180,'height':180})
     pg.set_content(f'<html><body style="margin:0;width:180px;height:180px">{logo}</body></html>')
     pg.screenshot(path=os.path.join(ROOT, 'static/apple-touch-icon.png'))
     br.close()
-print('og done', len(build.CASES) + 1)
+print('og done', len(build.CASES) + len(build.GUIDES) + 1)
