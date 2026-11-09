@@ -34,7 +34,7 @@ background:radial-gradient(90% 70% at 85% 90%,#1d4479 0%,#0B1F3A 65%);letter-spa
 <div style="position:absolute;left:84px;right:84px;bottom:220px;font-size:44px;font-weight:700;color:#E4ECF8;line-height:1.35">{html.escape(g.get('thumb_sub',''))}</div>
 <div style="position:absolute;left:84px;bottom:84px;display:flex;align-items:center;gap:20px">
 <div style="width:88px;height:88px">{LOGO}</div><div style="font-size:46px;font-weight:900">내집홈케어</div>
-<div style="font-size:30px;color:#9FB3CC;font-weight:700;margin-left:6px">설비 경력 20년</div></div></div>'''
+<div style="font-size:30px;color:#9FB3CC;font-weight:700;margin-left:6px">설비 경력 20년 이상</div></div></div>'''
 want = sys.argv[1:]
 with sync_playwright() as p:
     br = p.chromium.launch(); pg = br.new_page(viewport={'width': 1080, 'height': 1080})

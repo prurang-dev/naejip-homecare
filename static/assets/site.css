@@ -224,11 +224,30 @@ p{margin:0}
 .guide-desc{font-size:14.5px;color:var(--muted);line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 @media(min-width:720px){.guide-grid{grid-template-columns:1fr 1fr}}
 /* 작성자 */
-.author{display:flex;gap:14px;align-items:flex-start;margin:32px 0 8px;padding:18px;border-radius:16px;background:var(--soft)}
-.author img{flex:none;border-radius:12px;background:#fff}
-.author-n{margin:0;font-size:15.5px;color:var(--text)}
-.author-n span{color:var(--muted);font-size:13.5px;margin-left:4px}
-.author-d{margin:4px 0 0;font-size:14.5px;color:var(--sub);line-height:1.6}
+.author{margin:36px 0 8px;padding:26px 24px 22px;border-radius:18px;background:radial-gradient(circle at 25% 15%,#1d1d1f,#0a0a0b 70%);color:#d8d0bd;position:relative}
+.author::before{content:"";position:absolute;inset:9px;border:1px solid rgba(184,145,60,.7);border-radius:11px;pointer-events:none}
+.au-gold{background:linear-gradient(120deg,#8C6A1F 0%,#C9A24A 28%,#F3DE9E 46%,#D2AA4E 60%,#8C6A1F 100%);-webkit-background-clip:text;background-clip:text;color:#D2AA4E;-webkit-text-fill-color:transparent}
+.au-k{margin:0;font-size:12px;font-weight:600;letter-spacing:.28em;color:#C9A24A}
+.author-n{margin:6px 0 0;line-height:1.2}
+.author-n b{font-size:34px;font-weight:900}
+.author-n span{font-size:18px;font-weight:700;margin-left:4px}
+.au-s{margin:6px 0 0;font-size:14.5px;color:#cfc7b4}
+.au-hr{border:0;height:1px;margin:16px 0;background:linear-gradient(90deg,#8C6A1F,#F3DE9E 50%,#8C6A1F)}
+.au-p{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.au-p li{font-size:14.5px;line-height:1.55}
+.au-p b{display:block;color:#F0D58E;font-weight:700}
+.au-p span{color:#d8d0bd}
+.author-d{margin:14px 0 0;font-size:13px;color:#a69e8b;line-height:1.6}
+.au-foot{margin-top:14px;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:flex-end;gap:4px 12px;text-align:right}
+.au-call{font-size:26px;font-weight:900;text-decoration:none;letter-spacing:.01em}
+.au-h{font-size:13px;color:#cfc7b4}
+/* 현장 원칙 */
+.pr-grid{list-style:none;padding:0;margin:24px 0 0;display:grid;gap:12px}
+.pr{display:grid;align-content:start;grid-template-columns:auto 1fr;gap:4px 14px;padding:18px;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+.pr-ico{grid-row:span 2;width:44px;height:44px;border-radius:12px;background:#FDEEE6;color:var(--call);display:flex;align-items:center;justify-content:center}
+.pr-t{font-weight:800;font-size:17px;color:var(--navy);line-height:1.4}
+.pr-d{font-size:15px;color:var(--sub);line-height:1.55}
+@media(min-width:720px){.pr-grid{grid-template-columns:repeat(3,1fr)}.pr{grid-template-columns:1fr}.pr-ico{grid-row:auto;margin-bottom:6px}}
 /* 본문 그림 */
 .prose .fig{margin:24px 0}
 .prose .fig img{width:100%;height:auto;border-radius:14px;border:1px solid var(--line);display:block}

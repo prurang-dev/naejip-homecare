@@ -252,7 +252,7 @@ def case_card(c, small=False):
 def home():
     trust = ['장비로 원인부터 확인', '필요한 곳만 부분 시공', '작업 사진·영상 공유']
     if B.get('experience_years'):
-        trust.insert(0, f"설비 경력 {B['experience_years']}년")
+        trust.insert(0, B.get('experience_label') or f"설비 경력 {B['experience_years']}년")
     if B.get('arrival_minutes'):
         trust.insert(0, f"평균 {B['arrival_minutes']}분 출동")
     if B.get('warranty_months'):
@@ -361,6 +361,8 @@ def home():
   </div>
 </section>
 
+{principles_html()}
+
 <section class="sec sec-soft" id="equipment">
   <div class="wrap">
     <p class="eyebrow">짐작이 아니라 장비로</p>
@@ -466,15 +468,36 @@ def case_page(c):
 
 
 # ---------------- author / breadcrumb ----------------
+def principles_html():
+    ps = B.get('principles') or []
+    if not ps:
+        return ''
+    cards = ''.join(f'''<li class="pr"><span class="pr-ico">{icon(p.get('icon', 'check'), 24)}</span>
+  <span class="pr-t">{esc(p['t'])}</span><span class="pr-d">{esc(p['d'])}</span></li>''' for p in ps)
+    return f'''<section class="sec principles" id="principles">
+  <div class="wrap">
+    <p class="eyebrow">내집홈케어 현장 원칙</p>
+    <h2 class="h2">현장에서 꼭 지키는 세 가지</h2>
+    <p class="lead">{esc(B.get('experience_label', ''))}. 모르고 뜯으면 공사가 커지기 때문에, 원인부터 찾고 필요한 만큼만 고칩니다.</p>
+    <ul class="pr-grid">{cards}</ul>
+  </div>
+</section>'''
+
+
 def author_box():
     if B['owner'].startswith('['):
         return ''
-    bits = [f"설비 경력 {B['experience_years']}년" if B.get('experience_years') else '', B.get('experience_note', '')]
-    bits = ' · '.join(b for b in bits if b)
-    return f'''<aside class="author">
-  <img src="{u('logo.svg')}" alt="" width="48" height="48">
-  <div><p class="author-n">글·현장 <b>{esc(B['owner'])}</b> 대표 <span>{esc(B['name'])}</span></p>
-  <p class="author-d">{esc(bits)}. 직접 다녀온 현장과 작업 경험을 바탕으로 씁니다.</p></div>
+    exp = B.get('experience_label') or (f"설비 경력 {B['experience_years']}년" if B.get('experience_years') else '')
+    ps = (B.get('principles') or [])[:2]
+    lines = ''.join(f'<li><b>{esc(p["t"])}</b><span>{esc(p["d"])}</span></li>' for p in ps)
+    return f'''<aside class="author" aria-label="글쓴이">
+  <p class="au-k">NAEJIP HOME CARE</p>
+  <p class="author-n"><b class="au-gold">{esc(B['owner'])}</b> <span class="au-gold">대표</span></p>
+  <p class="au-s">{esc(B['name'])} · {esc(exp)}</p>
+  <hr class="au-hr">
+  <ul class="au-p">{lines}</ul>
+  <p class="author-d">직접 다녀온 현장과 20년 작업 경험을 바탕으로 씁니다.</p>
+  <div class="au-foot"><a class="au-call au-gold" href="tel:{TEL}">{esc(B['phone'])}</a><span class="au-h">{esc(B['hours'])} · naezipcare.kr</span></div>
 </aside>'''
 
 
@@ -482,8 +505,8 @@ def ld_person():
     if B['owner'].startswith('['):
         return {'@type': 'Organization', 'name': B['name']}
     d = {'@type': 'Person', 'name': B['owner'], 'jobTitle': '대표', 'worksFor': {'@type': 'Organization', 'name': B['name']}}
-    if B.get('experience_note'):
-        d['description'] = f"설비 경력 {B.get('experience_years', '')}년, {B['experience_note']}"
+    if B.get('experience_label'):
+        d['description'] = B['experience_label']
     return d
 
 
