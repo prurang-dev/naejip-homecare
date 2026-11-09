@@ -26,7 +26,8 @@ p{margin:0}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--navy)}
 .logo-mark{width:40px;height:40px;flex:none;border-radius:10px}
 .logo-text{display:flex;flex-direction:column;line-height:1.15;font-weight:800;font-size:19px;letter-spacing:-.02em}
-.logo-text span{font-size:11.5px;font-weight:600;color:var(--muted);letter-spacing:0}
+.logo-text span{font-size:11.5px;font-weight:600;color:var(--muted);letter-spacing:0;white-space:nowrap}
+@media (max-width:359px){.logo-text span{display:none}}
 .nav{display:none;gap:28px;margin-left:auto}
 .nav a{color:var(--sub);text-decoration:none;font-weight:600;font-size:15px}
 .nav a:hover{color:var(--navy)}
@@ -269,3 +270,4 @@ p{margin:0}
 .guide-img img{width:100%;height:100%;object-fit:cover;display:block}
 @media(min-width:720px){.guide-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}}
 .prose .fig img{max-height:640px;object-fit:contain;background:var(--soft)}
+html{scroll-padding-top:72px}

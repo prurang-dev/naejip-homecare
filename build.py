@@ -20,6 +20,8 @@ INDEX = os.environ.get('INDEX') == '1'   # 도메인 확정 전까지는 검색 
 B = json.load(open(os.path.join(ROOT, 'data/business.json'), encoding='utf-8'))
 RV = json.load(open(os.path.join(ROOT, 'data/reviews.json'), encoding='utf-8'))
 TEL = re.sub(r'[^0-9]', '', B['phone'])
+import hashlib
+CSS_VER = hashlib.md5(open(os.path.join(ROOT, 'static/assets/site.css'), 'rb').read()).hexdigest()[:8]
 SMS = re.sub(r'[^0-9]', '', B['sms'])
 
 SERVICE = {'leak': '누수 탐지·공사', 'drain': '하수구·배관', 'inspect': '배관 점검'}
@@ -187,7 +189,7 @@ def page(title, desc, path, body, og_image=None):
 <link rel="apple-touch-icon" href="{u('apple-touch-icon.png')}">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="{u('assets/site.css')}">
+<link rel="stylesheet" href="{u('assets/site.css')}?v={CSS_VER}">
 <script type="application/ld+json">{ld_business()}</script>
 </head>
 <body>
