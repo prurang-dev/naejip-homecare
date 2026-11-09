@@ -13,5 +13,5 @@
 11. 새 글을 배포한 뒤 IndexNow로 새 URL을 알린다 — OpenSEO 프로젝트 "내집홈케어"의 submit_indexnow_urls 사용 (키: data/indexnow_key.txt, 키 파일: static/<키>.txt).
 12. 설비 상식 글은 `content/guides/<slug>.md` (frontmatter: title, description, category[leak|drain|pipe|heating|bath|season|cost], service[leak|drain|inspect], date, related_cases(쉼표 구분 slug, 선택), cover(선택)). 주소는 /guide/<slug>/.
 13. 설비 상식 주제는 naejip-ops/plan/guide_topics.json 에서만 고른다. 주제마다 대표 키워드가 하나씩 있고, 이미 쓴 글과 대표 키워드·검색 의도가 겹치면 새 글을 쓰지 말고 기존 글을 보강한다.
-14. 설비 상식 글의 사진은 이 사이트에 이미 올라간 실제 현장 사진(static/cases/)만 쓴다. 가격·법·보험 내용은 단정하지 말고 "상황마다 다르다, 확인하라"는 범위로 쓰며, 최신 정보를 검색해 확인한다.
+14. 설비 상식 글에는 내용을 설명하는 그림 1~3장을 직접 그려 넣는다(HTML/SVG를 Playwright로 1200px 폭 JPG로 렌더링 → static/guides/<slug>/, 브랜드 색 남색 #0B1F3A·주황 #E2510C, Noto Sans CJK KR, 그림 속 글자는 본문과 같은 사실만). 첫 그림을 cover로. 본문에는 `![alt](경로)` 다음 줄에 캡션. 근거가 되는 실제 현장 사진(static/cases/)도 함께 쓸 수 있다. AI 생성 사진은 쓰지 않는다. 가격·법·보험 내용은 단정하지 말고 "상황마다 다르다, 확인하라"는 범위로 쓰며, 최신 정보를 검색해 확인한다.
 15. 네이버 초안은 사이트 글과 제목·도입·구성·문장이 모두 달라야 한다. 사이트 글은 정리형(질문 → 답 → 체크리스트), 네이버 글은 현장 이야기형(1인칭, 실제 사진 중심, 짧은 문단). 같은 문장을 그대로 쓰지 않는다.
