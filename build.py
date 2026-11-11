@@ -66,6 +66,7 @@ def parse_md(path):
 
 def inline(s):
     s = esc(s)
+    s = re.sub(r'\[([^\]]+)\]\(((?:https?://|/)[^)\s]+)\)', r'<a href="\2">\1</a>', s)
     return re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', s)
 
 
