@@ -8,6 +8,9 @@ cd "$(dirname "$0")/.."
 for s in "$@"; do
   if [ -f "content/guides/$s.md" ]; then python3 tools/make_thumb.py "$s"; fi
 done
+# 현장 사진 워터마크(새 사진만, 원본은 운영 저장소 originals/에 보관)
+OPS=""; for d in ../naejip-ops ../ops; do [ -d "$d/.git" ] && OPS="$d" && break; done
+if [ -n "$OPS" ]; then python3 tools/watermark.py --backup "$OPS/originals"; else python3 tools/watermark.py; echo "경고: 운영 저장소를 못 찾아 원본 보관 없이 워터마크만 찍음"; fi
 python3 tools/make_og.py
 BASE="/" SITE_URL="https://naezipcare.kr" INDEX=1 python3 build.py
 python3 tools/check.py --strict "$@"
