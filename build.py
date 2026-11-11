@@ -142,6 +142,12 @@ def icon(name, size=22):
 
 
 # ---------------- layout ----------------
+def ld_website():
+    d = {'@context': 'https://schema.org', '@type': 'WebSite', 'name': B['name'],
+         'alternateName': ['내집 홈케어', 'naezipcare', '평택 내집홈케어'], 'url': (SITE_URL or '') + '/'}
+    return '<script type="application/ld+json">' + json.dumps(d, ensure_ascii=False) + '</script>'
+
+
 def ld_business():
     d = {
         '@context': 'https://schema.org', '@type': 'Plumber',
@@ -192,6 +198,7 @@ def page(title, desc, path, body, og_image=None):
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="{u('assets/site.css')}?v={CSS_VER}">
 <script type="application/ld+json">{ld_business()}</script>
+{ld_website() if path == '' else ''}
 </head>
 <body>
 <a class="skip" href="#main">본문으로 건너뛰기</a>
