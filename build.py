@@ -26,7 +26,7 @@ SMS = re.sub(r'[^0-9]', '', B['sms'])
 
 SERVICE = {'leak': '누수 탐지·공사', 'drain': '하수구·배관', 'inspect': '배관 점검'}
 AREA = {'pyeongtaek': '평택', 'cheonan': '천안', 'cheonan-seobuk': '천안', 'suwon': '수원',
-        'yongin': '용인', 'osan': '오산', 'hwaseong': '화성', 'seoul-gangnam': '서울 강남'}
+        'yongin': '용인', 'osan': '오산', 'hwaseong': '화성', 'seoul-gangnam': '서울 강남', 'anseong': '안성'}
 
 
 def u(path):
