@@ -205,7 +205,7 @@ def page(title, desc, path, body, og_image=None):
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="{u('assets/site.css')}?v={CSS_VER}">
-{(f'<script async src="https://www.googletagmanager.com/gtag/js?id={B["ga4_id"]}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments)}}gtag("js",new Date());gtag("config","{B["ga4_id"]}");</script>') if B.get('ga4_id') and INDEX else ''}
+{(f'<script async src="https://www.googletagmanager.com/gtag/js?id={B["ga4_id"]}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments)}}gtag("js",new Date());gtag("config","{B["ga4_id"]}");document.addEventListener("click",function(e){{var a=e.target.closest&&e.target.closest("a[href^=\'tel:\'],a[href^=\'sms:\']");if(a){{gtag("event",a.href.indexOf("tel:")===0?"phone_click":"sms_click",{{link_location:(a.className||"link"),page_path:location.pathname}});}}}});</script>') if B.get('ga4_id') and INDEX else ''}
 <script type="application/ld+json">{ld_business()}</script>
 {ld_website() if path == '' else ''}
 </head>
