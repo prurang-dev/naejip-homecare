@@ -275,3 +275,10 @@ html{scroll-padding-top:72px}
 .summary p{margin:0 0 6px;line-height:1.65}
 .summary-t{font-weight:800;color:#0B1F3A}
 .summary-d{font-size:.85em;color:#5B6B80;margin:4px 0 0!important}
+.local-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.local-link{font-weight:700}
+.area-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:24px}
+.area-card{display:flex;flex-direction:column;gap:8px;padding:22px;border-radius:16px;background:#fff;border:1px solid #E3E8EF;text-decoration:none;color:#0B1F3A;box-shadow:0 2px 8px rgba(11,31,58,.05)}
+.area-card-t{font-size:1.35rem;font-weight:800}
+.area-card-d{color:#3A4A60;line-height:1.6}
+.area-card-n{color:#E2510C;font-weight:800}

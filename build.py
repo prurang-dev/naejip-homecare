@@ -182,6 +182,7 @@ def page(title, desc, path, body, og_image=None):
           f'<meta property="og:url" content="{esc(canonical)}">')
     canon = f'<link rel="canonical" href="{esc(canonical)}">' if canonical else ''
     guide_nav = f'<a href="{u("guide/")}">설비 상식</a>' if GUIDES else ''
+    area_nav = f'<a href="{u("area/")}">지역 안내</a>' if LOCALS else ''
     return f'''<!doctype html>
 <html lang="ko">
 <head>
@@ -218,7 +219,7 @@ def page(title, desc, path, body, og_image=None):
       <a href="{u('')}#equipment">탐지 장비</a>
       <a href="{u('case/')}">시공 사례</a>
       {guide_nav}
-      <a href="{u('')}#area">출동 지역</a>
+      {area_nav}
     </nav>
     <a class="top-call" href="tel:{TEL}">{icon('phone', 18)}<span>{esc(B['phone'])}</span></a>
     <details class="mnav">
@@ -229,6 +230,7 @@ def page(title, desc, path, body, og_image=None):
         <a href="{u('')}#equipment">탐지 장비</a>
         <a href="{u('case/')}">시공 사례</a>
         {guide_nav}
+        {area_nav}
         <a href="{u('')}#area">출동 지역</a>
         <a href="{u('')}#faq">자주 묻는 질문</a>
       </nav>
@@ -431,6 +433,7 @@ def home():
       <h2 class="h2">평택을 중심으로<br>{esc(B['region'])} 출동</h2>
       <p class="lead">{esc(' · '.join(B['areas']))}을 중심으로 출동합니다.</p>
       <ul class="chips">{area_html}</ul>
+      {('<div class="local-links">' + ''.join(f'<a class="btn btn-ghost local-link" href="{u("area/" + l["slug"] + "/")}">{esc(l["title"])} 안내 →</a>' for l in LOCALS) + '</div>') if LOCALS else ''}
     </div>
     <div class="faqs" id="faq">
       <p class="eyebrow">자주 묻는 질문</p>
@@ -719,11 +722,11 @@ def local_page(l):
     others = [x for x in LOCALS if x['slug'] != l['slug']]
     other_html = ('<p class="lead" style="margin-top:28px">다른 안내: ' + ' · '.join(
         f'<a href="{u("area/" + x["slug"] + "/")}">{esc(x["title"])}</a>' for x in others) + '</p>') if others else ''
-    bc = ld_breadcrumb([('홈', ''), (l['title'], f"area/{l['slug']}/")])
+    bc = ld_breadcrumb([('홈', ''), ('지역 안내', 'area/'), (l['title'], f"area/{l['slug']}/")])
     body = f'''
 <section class="sec page-head">
   <div class="wrap narrow">
-    <nav class="crumb" aria-label="위치"><a href="{u('')}">홈</a> / 지역 안내</nav>
+    <nav class="crumb" aria-label="위치"><a href="{u('')}">홈</a> / <a href="{u('area/')}">지역 안내</a></nav>
     <p class="eyebrow">{esc(l.get('eyebrow', '지역 안내'))}</p>
     <h1 class="h1">{esc(l['title'])}</h1>
     <p class="lead">{esc(l.get('lead', l.get('description', '')))}</p>
@@ -745,6 +748,24 @@ def local_page(l):
     return page(f"{l['title']} | {B['name']}", l.get('description', ''), f"area/{l['slug']}/", body)
 
 
+def area_list():
+    items = ''.join(f'''<a class="area-card" href="{u('area/' + l['slug'] + '/')}"><span class="area-card-t">{esc(l['title'])}</span>
+<span class="area-card-d">{esc(l.get('lead', ''))}</span><span class="area-card-n">실제 현장 {len(local_cases(l))}건 →</span></a>''' for l in LOCALS)
+    body = f'''
+<section class="sec page-head">
+  <div class="wrap">
+    <nav class="crumb" aria-label="위치"><a href="{u('')}">홈</a> / 지역 안내</nav>
+    <p class="eyebrow">지역 안내</p>
+    <h1 class="h1">지역별 누수 · 하수구 안내</h1>
+    <p class="lead">{esc(B['region'])} 출동. 지역마다 실제 현장과 함께 정리했습니다.</p>
+    <div class="area-grid">{items}</div>
+  </div>
+</section>
+<section class="sec"><div class="wrap">{call_block('우리 동네도 오시나요?', '평택을 중심으로 서울·경기 전 지역 출동 · 24시간 상담')}</div></section>
+{ld_breadcrumb([('홈', ''), ('지역 안내', 'area/')])}'''
+    return page(f"지역 안내 | {B['name']}", f"평택 누수탐지, 평택 하수구막힘 등 지역별 실제 현장과 해결 방법 안내. {B['region']} 출동, 24시간 상담 {B['phone']}.", 'area/', body)
+
+
 def write(path, content):
     full = os.path.join(OUT, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
@@ -759,6 +780,8 @@ def main():
     write('case/index.html', case_list())
     for c in CASES:
         write(f"case/{c['slug']}/index.html", case_page(c))
+    if LOCALS:
+        write('area/index.html', area_list())
     for l in LOCALS:
         write(f"area/{l['slug']}/index.html", local_page(l))
     if GUIDES:
@@ -769,7 +792,7 @@ def main():
                            f'<section class="sec page-head"><div class="wrap narrow"><h1 class="h1">페이지를 찾을 수 없습니다</h1>'
                            f'<p class="lead"><a href="{u("")}">홈으로 가기</a></p>{call_block("급하신가요?", "바로 전화 주세요.")}</div></section>'))
     if INDEX and SITE_URL:
-        urls = [u('')] + [u(f"area/{l['slug']}/") for l in LOCALS] + [u('case/')] + [u(f"case/{c['slug']}/") for c in CASES] + \
+        urls = [u('')] + ([u('area/')] if LOCALS else []) + [u(f"area/{l['slug']}/") for l in LOCALS] + [u('case/')] + [u(f"case/{c['slug']}/") for c in CASES] + \
             ([u('guide/')] + [u(f"guide/{g['slug']}/") for g in GUIDES] if GUIDES else [])
         sm = ''.join(f'<url><loc>{esc(SITE_URL + x)}</loc></url>' for x in urls)
         write('sitemap.xml', f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{sm}</urlset>')

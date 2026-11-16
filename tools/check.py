@@ -14,7 +14,7 @@ errs, warns = [], []
 def bad(slug, msg, hard=False):
     (errs if hard or slug in strict else warns).append(f'[{slug}] {msg}')
 def img_path(src): return os.path.join(ST, src.lstrip('/'))
-CASES = {c['slug']: c for c in build.CASES}; GUIDES = {g['slug']: g for g in build.GUIDES}
+CASES = {c['slug']: c for c in build.CASES}; GUIDES = {g['slug']: g for g in build.GUIDES}; LOCALS = {l['slug']: l for l in build.LOCALS}
 def common(x, kind):
     s = x['slug']
     for k in ['title', 'description', 'date']:
@@ -82,10 +82,10 @@ sm = os.path.join(DIST, 'sitemap.xml')
 if os.path.exists(sm):
     x = open(sm, encoding='utf-8').read()
     for s in strict:
-        kind = 'guide' if s in GUIDES else 'case'
+        kind = 'guide' if s in GUIDES else ('area' if s in LOCALS else 'case')
         if f'/{kind}/{s}/' not in x: errs.append(f'[{s}] sitemap에 없음 (INDEX=1 SITE_URL=... 로 빌드했는지 확인)')
 for s in strict:
-    if s not in CASES and s not in GUIDES: errs.append(f'[{s}] 해당 slug의 글이 없음')
+    if s not in CASES and s not in GUIDES and s not in LOCALS: errs.append(f'[{s}] 해당 slug의 글이 없음')
 for w in warns: print('경고', w)
 for e in errs: print('오류', e)
 print(f"\n{'통과' if not errs else '실패'}: 오류 {len(errs)}개, 경고 {len(warns)}개")
