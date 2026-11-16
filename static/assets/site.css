@@ -271,3 +271,7 @@ p{margin:0}
 @media(min-width:720px){.guide-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}}
 .prose .fig img{max-height:640px;object-fit:contain;background:var(--soft)}
 html{scroll-padding-top:72px}
+.summary{background:#F3F6FA;border-left:4px solid #E2510C;border-radius:12px;padding:16px 18px;margin:18px 0}
+.summary p{margin:0 0 6px;line-height:1.65}
+.summary-t{font-weight:800;color:#0B1F3A}
+.summary-d{font-size:.85em;color:#5B6B80;margin:4px 0 0!important}

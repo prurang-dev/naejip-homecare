@@ -81,10 +81,16 @@ def md_to_html(md):
             out.append(f'<figure class="fig"><img src="{u(m.group(2))}" alt="{esc(m.group(1))}" loading="lazy" decoding="async">'
                        f'<figcaption>{cap}</figcaption></figure>')
             continue
-        if first.startswith('## '):
+        if first.startswith('### '):
+            out.append(f'<h3>{inline(first[4:])}</h3>')
+            if len(lines) > 1:
+                out.append('<p>' + '<br>'.join(inline(l) for l in lines[1:]) + '</p>')
+        elif first.startswith('## '):
             out.append(f'<h2>{inline(first[3:])}</h2>')
             if len(lines) > 1:
                 out.append('<p>' + '<br>'.join(inline(l) for l in lines[1:]) + '</p>')
+        elif all(re.match(r'^\d+\. ', l) for l in lines):
+            out.append('<ol>' + ''.join(f'<li>{inline(re.sub(r"^\d+\. ", "", l))}</li>' for l in lines) + '</ol>')
         elif all(l.startswith('- ') for l in lines):
             out.append('<ul>' + ''.join(f'<li>{inline(l[2:])}</li>' for l in lines) + '</ul>')
         else:
@@ -113,6 +119,7 @@ def sort_key(c):
 CASES = sorted([parse_md(p) for p in glob.glob(os.path.join(ROOT, 'content/cases/*.md'))],
                key=sort_key, reverse=True)
 BY_SLUG = {c['slug']: c for c in CASES}
+LOCALS = sorted([parse_md(p) for p in glob.glob(os.path.join(ROOT, 'content/local/*.md'))], key=lambda x: x.get('order', 99))
 GUIDES = sorted([parse_md(p) for p in glob.glob(os.path.join(ROOT, 'content/guides/*.md'))],
                 key=sort_key, reverse=True)
 GUIDE_CAT = {'leak': '누수', 'drain': '하수구·막힘', 'pipe': '배관', 'heating': '난방·보일러배관',
@@ -197,6 +204,7 @@ def page(title, desc, path, body, og_image=None):
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="{u('assets/site.css')}?v={CSS_VER}">
+{(f'<script async src="https://www.googletagmanager.com/gtag/js?id={B["ga4_id"]}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments)}}gtag("js",new Date());gtag("config","{B["ga4_id"]}");</script>') if B.get('ga4_id') and INDEX else ''}
 <script type="application/ld+json">{ld_business()}</script>
 {ld_website() if path == '' else ''}
 </head>
@@ -237,6 +245,7 @@ def page(title, desc, path, body, og_image=None):
     <p>{' · '.join(x for x in [('대표 ' + esc(B['owner'])) if not B['owner'].startswith('[') else '', '사업자등록번호 ' + esc(B['biz_no'])] if x)}</p>
     <p>{(esc(B['address']) + ' · ') if not B['address'].startswith('[') else ''}전화 <a href="tel:{TEL}">{esc(B['phone'])}</a></p>
     <p>출동 지역: {esc(B['region'])} ({esc(' · '.join(B['areas']))} 외 {esc(' · '.join(B['areas_more']))})</p>
+    {('<p>지역 안내: ' + ' · '.join(f'<a href="{u("area/" + l["slug"] + "/")}">{esc(l["title"])}</a>' for l in LOCALS) + '</p>') if LOCALS else ''}
     <p class="foot-small">© {esc(B['name'])}</p>
   </div>
 </footer>
@@ -478,6 +487,7 @@ def case_page(c):
     <div class="prose">{md_to_html(c['body'])}</div>
     <h2 class="h3">현장 사진</h2>
     <div class="gallery">{video}{gallery}</div>
+    {''.join(f'<p class="lead"><a href="{u("area/" + l["slug"] + "/")}">{esc(l["title"])} 안내와 다른 현장 모아 보기 →</a></p>' for l in locals_for_case(c))}
     {author_box()}
     {call_block('같은 증상으로 고민 중이신가요?', f"{esc(case_place(c))}을 비롯해 {esc(B['region'])} 출동")}
     <h2 class="h3">다른 현장</h2>
@@ -649,6 +659,92 @@ def guide_page(g):
     return page(f"{g['title']} | {B['name']}", g.get('description', ''), f"guide/{g['slug']}/", body, og_image=og)
 
 
+
+# ---------------- 지역 × 서비스 안내 페이지 ----------------
+def lst(v):
+    return [x.strip() for x in (v or '').split(',') if x.strip()]
+
+
+def local_cases(l, near=False):
+    areas = lst(l.get('areas'))
+    svcs = lst(l.get('services'))
+    hit = [c for c in CASES if c.get('area') in areas and (not svcs or c.get('service') in svcs)]
+    if not near:
+        return hit
+    return [c for c in CASES if c not in hit and (not svcs or c.get('service') in svcs)][:int(l.get('near_max', 6))]
+
+
+def locals_for_case(c):
+    return [l for l in LOCALS if c.get('area') in lst(l.get('areas')) and (not lst(l.get('services')) or c.get('service') in lst(l.get('services')))]
+
+
+def faq_pairs(md):
+    pairs, q = [], None
+    for block in re.split(r'\n\s*\n', md.strip()):
+        lines = block.strip().split('\n')
+        if lines[0].startswith('### '):
+            q = lines[0][4:].strip()
+            a = ' '.join(lines[1:]).strip()
+            if a:
+                pairs.append((q, a)); q = None
+        elif q and not lines[0].startswith('#'):
+            pairs.append((q, ' '.join(lines).strip())); q = None
+    return [(q, re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', a).replace('**', '')) for q, a in pairs]
+
+
+def ld_faq(md):
+    pairs = faq_pairs(md)
+    if not pairs or not SITE_URL:
+        return ''
+    d = {'@context': 'https://schema.org', '@type': 'FAQPage', 'mainEntity': [
+        {'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in pairs]}
+    return f'<script type="application/ld+json">{json.dumps(d, ensure_ascii=False)}</script>'
+
+
+def ld_service(l):
+    if not SITE_URL:
+        return ''
+    d = {'@context': 'https://schema.org', '@type': 'Service', 'name': l['title'], 'serviceType': l.get('service_type', l['title']),
+         'description': l.get('description', ''), 'url': SITE_URL + u(f"area/{l['slug']}/"),
+         'areaServed': [{'@type': 'City', 'name': a} for a in lst(l.get('area_names'))],
+         'provider': {'@type': 'Plumber', 'name': B['name'], 'telephone': B['phone'], 'url': SITE_URL + '/'}}
+    return f'<script type="application/ld+json">{json.dumps(d, ensure_ascii=False)}</script>'
+
+
+def local_page(l):
+    hit = local_cases(l)
+    near = local_cases(l, near=True)
+    near_html = (f'<h2 class="h2" style="margin-top:40px">{esc(l.get("near_title", "다른 지역 비슷한 현장"))}</h2>'
+                 f'<div class="case-grid">{"".join(case_card(c) for c in near)}</div>') if near else ''
+    others = [x for x in LOCALS if x['slug'] != l['slug']]
+    other_html = ('<p class="lead" style="margin-top:28px">다른 안내: ' + ' · '.join(
+        f'<a href="{u("area/" + x["slug"] + "/")}">{esc(x["title"])}</a>' for x in others) + '</p>') if others else ''
+    bc = ld_breadcrumb([('홈', ''), (l['title'], f"area/{l['slug']}/")])
+    body = f'''
+<section class="sec page-head">
+  <div class="wrap narrow">
+    <nav class="crumb" aria-label="위치"><a href="{u('')}">홈</a> / 지역 안내</nav>
+    <p class="eyebrow">{esc(l.get('eyebrow', '지역 안내'))}</p>
+    <h1 class="h1">{esc(l['title'])}</h1>
+    <p class="lead">{esc(l.get('lead', l.get('description', '')))}</p>
+    {('<div class="summary"><p class="summary-t">한눈에 보기</p><p>' + inline(l['summary']) + '</p><p class="summary-d">' + esc(l.get('updated', '')) + ' 기준 · ' + esc(B['name']) + ' · ' + esc(B['phone']) + '</p></div>') if l.get('summary') else ''}
+    {call_block(l.get('cta_title', '지금 바로 상담하세요'), l.get('cta_sub', '사진을 문자로 보내 주시면 먼저 봐 드립니다.'))}
+    <div class="prose">{md_to_html(l['body'])}</div>
+  </div>
+</section>
+<section class="sec">
+  <div class="wrap">
+    <h2 class="h2">{esc(l.get('cases_title', '실제 현장'))} {len(hit)}건</h2>
+    <div class="case-grid">{''.join(case_card(c) for c in hit)}</div>
+    {near_html}
+    {other_html}
+  </div>
+</section>
+<section class="sec"><div class="wrap">{call_block(l.get('cta_title', '지금 바로 상담하세요'), '24시간 상담 · 평택을 중심으로 서울·경기 전 지역 출동')}</div></section>
+{ld_service(l)}{ld_faq(l['body'])}{bc}'''
+    return page(f"{l['title']} | {B['name']}", l.get('description', ''), f"area/{l['slug']}/", body)
+
+
 def write(path, content):
     full = os.path.join(OUT, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
@@ -663,6 +759,8 @@ def main():
     write('case/index.html', case_list())
     for c in CASES:
         write(f"case/{c['slug']}/index.html", case_page(c))
+    for l in LOCALS:
+        write(f"area/{l['slug']}/index.html", local_page(l))
     if GUIDES:
         write('guide/index.html', guide_list())
         for g in GUIDES:
@@ -671,13 +769,20 @@ def main():
                            f'<section class="sec page-head"><div class="wrap narrow"><h1 class="h1">페이지를 찾을 수 없습니다</h1>'
                            f'<p class="lead"><a href="{u("")}">홈으로 가기</a></p>{call_block("급하신가요?", "바로 전화 주세요.")}</div></section>'))
     if INDEX and SITE_URL:
-        urls = [u('')] + [u('case/')] + [u(f"case/{c['slug']}/") for c in CASES] + \
+        urls = [u('')] + [u(f"area/{l['slug']}/") for l in LOCALS] + [u('case/')] + [u(f"case/{c['slug']}/") for c in CASES] + \
             ([u('guide/')] + [u(f"guide/{g['slug']}/") for g in GUIDES] if GUIDES else [])
         sm = ''.join(f'<url><loc>{esc(SITE_URL + x)}</loc></url>' for x in urls)
         write('sitemap.xml', f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{sm}</urlset>')
         write('robots.txt', f'User-agent: *\nAllow: /\nSitemap: {SITE_URL}{u("sitemap.xml")}\n')
     else:
         write('robots.txt', 'User-agent: *\nDisallow: /\n')
+    if SITE_URL:
+        lines = [f"# {B['name']}", '', f"> {B['region']} 누수탐지·하수구 막힘·배관 공사 업체. 평택을 중심으로 출동하며, 가압 테스트·수소 탐지가스·열화상·색소 테스트·내시경·고압세척 장비로 원인을 찾고 필요한 곳만 고칩니다. {B['experience_label']}. 24시간 상담 {B['phone']}.", '',
+                 f"- 상호: {B['name']} / 대표: {B['owner']} / 사업자등록번호: {B['biz_no']}", f"- 출동 지역: {', '.join(B['areas'] + B['areas_more'])}", f"- 네이버 블로그: {B['naver_blog']}", '',
+                 '## 지역 안내'] + [f"- [{l['title']}]({SITE_URL}{u('area/' + l['slug'] + '/')}): {l.get('description', '')}" for l in LOCALS] + \
+                ['', '## 실제 현장'] + [f"- [{c['title']}]({SITE_URL}{u('case/' + c['slug'] + '/')}) ({case_date(c)})" for c in CASES] + \
+                ['', '## 설비 상식'] + [f"- [{g['title']}]({SITE_URL}{u('guide/' + g['slug'] + '/')})" for g in GUIDES]
+        write('llms.txt', '\n'.join(lines) + '\n')
     write('.nojekyll', '')
     print(f'built {len(CASES)} cases, {len(GUIDES)} guides -> {OUT} (BASE={BASE}, INDEX={INDEX})')
 

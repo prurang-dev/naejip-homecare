@@ -12,10 +12,11 @@ h = functools.partial(Q, directory=build.OUT)
 srv = http.server.ThreadingHTTPServer(('127.0.0.1', 0), h); port = srv.server_address[1]
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 gs = {g['slug'] for g in build.GUIDES}
+ls = {l['slug'] for l in build.LOCALS}
 with sync_playwright() as p:
     br = p.chromium.launch()
     for s in sys.argv[1:]:
-        path = f"{'guide' if s in gs else 'case'}/{s}/"
+        path = f"{'guide' if s in gs else ('area' if s in ls else 'case')}/{s}/"
         for name, w in [('mobile', 390), ('desktop', 1280)]:
             pg = br.new_page(viewport={'width': w, 'height': 900})
             pg.goto(f'http://127.0.0.1:{port}/{path}')
