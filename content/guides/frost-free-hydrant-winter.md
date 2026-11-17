@@ -8,6 +8,8 @@ related_cases: 2026-10-godeok-villa-heating-thermal-check
 thumb_title: "부동전인데|왜 *얼었을까?*"
 thumb_sub: "'얼지 않는 수도'도 잠그는 법이 따로 있어요"
 cover: /guides/frost-free-hydrant-winter/hydrant-how-it-works.jpg
+selfcheck: "부동전 손잡이를 끝까지 잠그지 않고 쓴다|겨울에도 호스를 꽂아 둔 채로 둔다|잠갔는데도 꼭지에서 물이 똑똑 떨어진다|작년 겨울에 얼어서 물이 안 나온 적이 있다|부동전 주변 땅이 늘 젖어 있다"
+selfcheck_n: 2
 ---
 
 ## 결론부터: 부동전은 어떻게 안 어나요?

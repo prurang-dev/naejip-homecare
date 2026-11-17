@@ -8,6 +8,8 @@ related_cases: 2026-02-cheonan-sink-drain-scaling
 thumb_title: "청소했는데|왜 *냄새가* 날까?"
 thumb_sub: "싱크대 냄새 마개, 트랩부터 보세요"
 cover: /guides/sink-drain-smell-trap/sink-smell-three-spots.jpg
+selfcheck: "거름망을 비워도 하수구 냄새가 난다|오래 비운 뒤에 냄새가 더 심하다|싱크대 아래 주름관이 바닥 구멍에 헐겁게 꽂혀 있다|하부장 안에서 냄새가 더 진하다|날벌레가 배수구 주변에 자주 보인다"
+selfcheck_n: 2
 ---
 
 ## 결론부터: 싱크대 냄새는 어디서 올라오나요?

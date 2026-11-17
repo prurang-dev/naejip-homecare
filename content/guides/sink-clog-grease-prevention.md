@@ -8,6 +8,8 @@ related_cases: 2026-02-cheonan-sink-drain-scaling
 thumb_title: "꿀렁꿀렁,|*기름때*가 보낸 신호"
 thumb_sub: "싱크대 막힘, 뚫기 전에 알아 둘 것"
 cover: /guides/sink-clog-grease-prevention/sink-clog-stages.jpg
+selfcheck: "물이 예전보다 늦게 빠진다|물 내릴 때 꿀렁꿀렁 소리가 난다|설거지 물이 바닥이나 하부장으로 역류한 적이 있다|기름진 국물이나 기름을 싱크대에 자주 버린다|뚫고 나서 몇 달 안 돼 또 막혔다"
+selfcheck_n: 2
 ---
 
 ## 결론부터: 싱크대는 왜 막히나요?

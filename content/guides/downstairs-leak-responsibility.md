@@ -9,6 +9,8 @@ related_cases: 2026-11-03-cheonan-buldang-villa-hotwater-leak, 2026-11-yeoksam-v
 thumb_title: "아랫집 천장 누수,|*누가* 고쳐야 할까?"
 thumb_sub: "윗집 탓? 책임은 '물 새는 위치'로 갈립니다"
 cover: /guides/downstairs-leak-responsibility/leak-responsibility-by-location.jpg
+selfcheck: "아랫집 천장에 물 얼룩이나 물방울이 생겼다|비가 오지 않는 날에도 얼룩이 커진다|우리 집 수도를 다 잠가도 계량기 별표가 돈다|보일러 압력이 자주 떨어지거나 물 보충 알림이 뜬다|욕실·주방 바닥 줄눈이 들뜨거나 젖어 있다"
+selfcheck_n: 2
 ---
 
 ## 결론부터: 누가 고쳐야 하나요?
