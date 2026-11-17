@@ -247,6 +247,7 @@ imgs.forEach(function(im,i){{im.style.cursor='zoom-in';im.addEventListener('clic
 lb.querySelector('.lb-x').onclick=hide;lb.querySelector('.lb-p').onclick=function(e){{e.stopPropagation();show(k-1)}};lb.querySelector('.lb-n').onclick=function(e){{e.stopPropagation();show(k+1)}};
 lb.addEventListener('click',function(e){{if(e.target===lb)hide()}});document.addEventListener('keydown',function(e){{if(lb.hidden)return;if(e.key==='Escape')hide();if(e.key==='ArrowLeft')show(k-1);if(e.key==='ArrowRight')show(k+1)}});
 var sx=0;lb.addEventListener('touchstart',function(e){{sx=e.touches[0].clientX}},{{passive:true}});lb.addEventListener('touchend',function(e){{var d=e.changedTouches[0].clientX-sx;if(Math.abs(d)>40)show(k+(d<0?1:-1))}});
+document.querySelectorAll('.vwrap').forEach(function(w){{var v=w.querySelector('video'),b=w.querySelector('.vplay');b.addEventListener('click',function(){{b.hidden=true;v.controls=true;v.play();if(window.gtag)gtag('event','video_play',{{page_path:location.pathname}})}});v.addEventListener('play',function(){{b.hidden=true}})}});
 var rb=document.querySelector('.readbar i');if(rb)window.addEventListener('scroll',function(){{var h=document.documentElement;rb.style.width=Math.min(100,h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'}},{{passive:true}});
 document.querySelectorAll('.selfcheck').forEach(function(b){{var n=+b.dataset.n,r=b.querySelector('.sc-r'),c=b.querySelector('.sc-cta');b.addEventListener('change',function(){{var m=b.querySelectorAll('input:checked').length;
 r.textContent=m===0?'해당하는 항목을 눌러 보세요.':(m>=n?m+'개 해당 — 점검이 필요한 상태일 수 있어요. 사진을 문자로 보내 주시면 먼저 봐 드립니다.':m+'개 해당 — 아래 내용을 읽어 보시고, 증상이 계속되면 상담하세요.');c.hidden=m<n;if(m===n&&window.gtag)gtag('event','selfcheck_done',{{page_path:location.pathname}})}})}});
@@ -514,8 +515,11 @@ def case_page(c):
         f'<figcaption>{esc(im.get("alt", ""))}</figcaption></figure>' for im in c['images'])
     video = ''
     if c.get('video'):
-        video = (f'<figure class="vid"><video src="{u(c["video"])}" controls muted playsinline preload="metadata"></video>'
-                 f'<figcaption>현장 영상</figcaption></figure>')
+        vp = c['video'].rsplit('.', 1)[0] + '-poster.jpg'
+        poster = u(vp) if os.path.exists(os.path.join(ROOT, 'static', vp.lstrip('/'))) else ''
+        video = (f'<figure class="vidbox"><div class="vwrap"><video src="{u(c["video"])}" {("poster=" + chr(34) + poster + chr(34)) if poster else ""} playsinline preload="none"></video>'
+                 f'<button class="vplay" type="button" aria-label="현장 영상 재생"></button></div>'
+                 f'<figcaption>{esc(c.get("video_title") or "현장 영상")} · 눌러서 재생</figcaption></figure>')
     related = [x for x in CASES if x['slug'] != c['slug'] and x.get('service') == c.get('service')][:3]
     if len(related) < 3:
         related += [x for x in CASES if x['slug'] != c['slug'] and x not in related][:3 - len(related)]
@@ -538,10 +542,11 @@ def case_page(c):
     <p class="lead">{esc(c.get('description', ''))}</p>
     <img class="cover" src="{u(cover)}" alt="{esc(c['title'])}" decoding="async">
     <div class="mini-cta"><span>같은 증상이라면 지금 바로 상담하세요</span><a class="btn btn-call" href="tel:{TEL}">{icon('phone', 18)}<span>{esc(B['phone'])}</span></a></div>
+    {video}
     <div class="prose">{md_to_html(c['body'])}</div>
     <h2 class="h3">현장 사진</h2>
     <p class="gallery-hint">사진을 누르면 크게 볼 수 있어요</p>
-    <div class="gallery">{video}{gallery}</div>
+    <div class="gallery">{gallery}</div>
     {guides_html}
     {''.join(f'<p class="lead"><a href="{u("area/" + l["slug"] + "/")}">{esc(l["title"])} 안내와 다른 현장 모아 보기 →</a></p>' for l in locals_for_case(c))}
     {author_box()}

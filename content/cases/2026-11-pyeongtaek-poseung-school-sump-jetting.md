@@ -19,6 +19,7 @@ images:
   - src: /cases/2026-11-pyeongtaek-poseung-sump-jetting/jetting-truck-equipment-2.jpg
     alt: 고압세척 차량 안의 엔진, 호스 릴, 흡입기 등 장비
 video: /cases/2026-11-pyeongtaek-poseung-sump-jetting/sump-draining.mp4
+video_title: "막힌 물이 빠지는 순간"
 ---
 
 ## 어떤 문제였나요

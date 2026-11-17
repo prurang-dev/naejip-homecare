@@ -15,6 +15,7 @@ images:
   - src: /cases/2026-11-03-cheonan-hotwater-leak/gauge-end.jpg
     alt: 11초 뒤 디지털 압력계 3.90 bar로 압력 하락, 온수 배관 누수 확인
 video: /cases/2026-11-03-cheonan-hotwater-leak/leak-test-pressure-drop.mp4
+video_title: "압력이 떨어지는 순간"
 ---
 
 ## 어떤 문제였나요

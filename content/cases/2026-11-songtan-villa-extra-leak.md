@@ -27,6 +27,7 @@ images:
   - src: /cases/2026-11-songtan-extra-leak/threshold-restored.jpg
     alt: 문틀 아래 굴착 자리를 시멘트로 메워 마감한 모습
 video: /cases/2026-11-songtan-extra-leak/leak-water-video.mp4
+video_title: "물 새는 곳 찾은 장면"
 ---
 
 ## 어떤 문제였나요

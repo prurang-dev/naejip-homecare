@@ -13,6 +13,7 @@ images:
   - src: /cases/2026-11-godeok-heating-leak/fitting-closeup.jpg
     alt: 바닥 속 난방 배관 이음부를 가까이에서 본 모습
 video: /cases/2026-11-godeok-heating-leak/leak-water-video.mp4
+video_title: "바닥 속 물 새는 장면"
 ---
 
 ## 어떤 문제였나요

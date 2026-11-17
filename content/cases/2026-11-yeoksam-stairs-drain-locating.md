@@ -11,6 +11,7 @@ images:
   - src: /cases/2026-11-yeoksam-pipe-locating/pipe-locator.jpg
     alt: 서울 역삼동 건물 계단에서 관로탐지기로 하수구 배관 위치를 추적하는 모습
 video: /cases/2026-11-yeoksam-pipe-locating/pipe-locator-video.mp4
+video_title: "땅속 배관 찾는 장면"
 ---
 
 ## 어떤 문제였나요
