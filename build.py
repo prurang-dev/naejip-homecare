@@ -72,6 +72,7 @@ def inline(s):
 
 def md_to_html(md):
     out = []
+    h2n = 0
     for block in re.split(r'\n\s*\n', md.strip()):
         lines = block.strip().split('\n')
         first = lines[0]
@@ -86,7 +87,8 @@ def md_to_html(md):
             if len(lines) > 1:
                 out.append('<p>' + '<br>'.join(inline(l) for l in lines[1:]) + '</p>')
         elif first.startswith('## '):
-            out.append(f'<h2>{inline(first[3:])}</h2>')
+            h2n += 1
+            out.append(f'<h2 id="s{h2n}">{inline(first[3:])}</h2>')
             if len(lines) > 1:
                 out.append('<p>' + '<br>'.join(inline(l) for l in lines[1:]) + '</p>')
         elif all(re.match(r'^\d+\. ', l) for l in lines):
@@ -237,6 +239,18 @@ def page(title, desc, path, body, og_image=None):
     </details>
   </div>
 </header>
+<div class="lb" hidden><button class="lb-x" aria-label="닫기">×</button><button class="lb-p" aria-label="이전">‹</button><img alt=""><button class="lb-n" aria-label="다음">›</button><p class="lb-c"></p></div>
+<script>document.addEventListener('DOMContentLoaded',function(){{var imgs=[].slice.call(document.querySelectorAll('.gallery img,.prose .fig img')),lb=document.querySelector('.lb'),li=lb.querySelector('img'),lc=lb.querySelector('.lb-c'),k=0;
+function show(i){{k=(i+imgs.length)%imgs.length;li.src=imgs[k].currentSrc||imgs[k].src;lc.textContent=imgs[k].alt||'';lb.hidden=false;document.body.style.overflow='hidden';if(window.gtag)gtag('event','photo_view',{{page_path:location.pathname}})}}
+function hide(){{lb.hidden=true;document.body.style.overflow=''}}
+imgs.forEach(function(im,i){{im.style.cursor='zoom-in';im.addEventListener('click',function(){{show(i)}})}});
+lb.querySelector('.lb-x').onclick=hide;lb.querySelector('.lb-p').onclick=function(e){{e.stopPropagation();show(k-1)}};lb.querySelector('.lb-n').onclick=function(e){{e.stopPropagation();show(k+1)}};
+lb.addEventListener('click',function(e){{if(e.target===lb)hide()}});document.addEventListener('keydown',function(e){{if(lb.hidden)return;if(e.key==='Escape')hide();if(e.key==='ArrowLeft')show(k-1);if(e.key==='ArrowRight')show(k+1)}});
+var sx=0;lb.addEventListener('touchstart',function(e){{sx=e.touches[0].clientX}},{{passive:true}});lb.addEventListener('touchend',function(e){{var d=e.changedTouches[0].clientX-sx;if(Math.abs(d)>40)show(k+(d<0?1:-1))}});
+var rb=document.querySelector('.readbar i');if(rb)window.addEventListener('scroll',function(){{var h=document.documentElement;rb.style.width=Math.min(100,h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'}},{{passive:true}});
+document.querySelectorAll('.selfcheck').forEach(function(b){{var n=+b.dataset.n,r=b.querySelector('.sc-r'),c=b.querySelector('.sc-cta');b.addEventListener('change',function(){{var m=b.querySelectorAll('input:checked').length;
+r.textContent=m===0?'해당하는 항목을 눌러 보세요.':(m>=n?m+'개 해당 — 점검이 필요한 상태일 수 있어요. 사진을 문자로 보내 주시면 먼저 봐 드립니다.':m+'개 해당 — 아래 내용을 읽어 보시고, 증상이 계속되면 상담하세요.');c.hidden=m<n;if(m===n&&window.gtag)gtag('event','selfcheck_done',{{page_path:location.pathname}})}})}});
+}});</script>
 <script>document.querySelectorAll('.mnav-panel a').forEach(function(a){{a.addEventListener('click',function(){{a.closest('details').removeAttribute('open')}})}})</script>
 <main id="main">
 {body}
@@ -466,6 +480,34 @@ def case_list():
     return page(f"시공 사례 | {B['name']}", f"{' · '.join(B['areas'])} 누수탐지·하수구·배관 실제 시공 사례 {len(CASES)}건", 'case/', body)
 
 
+SVC_GUIDE_CATS = {'leak': ['leak', 'cost', 'heating', 'bath', 'season', 'pipe'], 'drain': ['drain', 'bath'], 'inspect': ['heating', 'leak']}
+
+
+def guides_for_case(c, n=2):
+    direct = [g for g in GUIDES if c['slug'] in [x.strip() for x in g.get('related_cases', '').split(',')]]
+    cats = SVC_GUIDE_CATS.get(c.get('service'), [])
+    more = sorted([g for g in GUIDES if g not in direct and g.get('category') in cats], key=lambda g: cats.index(g.get('category')))
+    return (direct + more)[:n]
+
+
+def selfcheck_html(x):
+    items = [t.strip() for t in (x.get('selfcheck') or '').split('|') if t.strip()]
+    if not items:
+        return ''
+    boxes = ''.join(f'<label class="sc-item"><input type="checkbox"><span>{esc(t)}</span></label>' for t in items)
+    return (f'<div class="selfcheck" data-n="{int(x.get("selfcheck_n", 2))}"><p class="sc-t">{esc(x.get("selfcheck_title", "우리 집도 해당될까? 30초 자가진단"))}</p>{boxes}'
+            f'<p class="sc-r" aria-live="polite">해당하는 항목을 눌러 보세요.</p>'
+            f'<a class="btn btn-call sc-cta" href="tel:{TEL}" hidden>{icon("phone", 18)}<span>{esc(B["phone"])} 상담하기</span></a></div>')
+
+
+def toc_html(md):
+    hs = [l[3:].strip() for l in md.split('\n') if l.startswith('## ')]
+    if len(hs) < 3:
+        return ''
+    return '<nav class="toc" aria-label="목차"><p class="toc-t">이 글의 순서</p><ol>' + ''.join(
+        f'<li><a href="#s{i + 1}">{inline(h)}</a></li>' for i, h in enumerate(hs)) + '</ol></nav>'
+
+
 def case_page(c):
     gallery = ''.join(
         f'<figure><img src="{u(im["src"])}" alt="{esc(im.get("alt", ""))}" loading="lazy" decoding="async">'
@@ -478,7 +520,16 @@ def case_page(c):
     if len(related) < 3:
         related += [x for x in CASES if x['slug'] != c['slug'] and x not in related][:3 - len(related)]
     cover = c.get('cover') or (c['images'][0]['src'] if c['images'] else '')
+    gs = guides_for_case(c)
+    guides_html = (f'<h2 class="h3">이 현장과 관련된 설비 상식</h2><div class="guide-grid">{"".join(guide_card(g) for g in gs)}</div>') if gs else ''
+    i = CASES.index(c)
+    newer = CASES[i - 1] if i > 0 else None
+    older = CASES[i + 1] if i + 1 < len(CASES) else None
+    pn = '<nav class="pn" aria-label="이전·다음 현장">' + \
+        (f'<a class="pn-a" href="{u("case/" + older["slug"] + "/")}"><span>← 이전 현장</span><b>{esc(older["title"])}</b></a>' if older else '<span></span>') + \
+        (f'<a class="pn-a pn-r" href="{u("case/" + newer["slug"] + "/")}"><span>다음 현장 →</span><b>{esc(newer["title"])}</b></a>' if newer else '<span></span>') + '</nav>'
     body = f'''
+<div class="readbar" aria-hidden="true"><i></i></div>
 <article class="sec page-head">
   <div class="wrap narrow">
     <nav class="crumb" aria-label="위치"><a href="{u('')}">홈</a> / <a href="{u('case/')}">시공 사례</a></nav>
@@ -489,10 +540,13 @@ def case_page(c):
     <div class="mini-cta"><span>같은 증상이라면 지금 바로 상담하세요</span><a class="btn btn-call" href="tel:{TEL}">{icon('phone', 18)}<span>{esc(B['phone'])}</span></a></div>
     <div class="prose">{md_to_html(c['body'])}</div>
     <h2 class="h3">현장 사진</h2>
+    <p class="gallery-hint">사진을 누르면 크게 볼 수 있어요</p>
     <div class="gallery">{video}{gallery}</div>
+    {guides_html}
     {''.join(f'<p class="lead"><a href="{u("area/" + l["slug"] + "/")}">{esc(l["title"])} 안내와 다른 현장 모아 보기 →</a></p>' for l in locals_for_case(c))}
     {author_box()}
     {call_block('같은 증상으로 고민 중이신가요?', f"{esc(case_place(c))}을 비롯해 {esc(B['region'])} 출동")}
+    {pn}
     <h2 class="h3">다른 현장</h2>
     <div class="case-grid three">{''.join(case_card(x) for x in related)}</div>
   </div>
@@ -642,6 +696,7 @@ def guide_page(g):
     other_html = (f'<h2 class="h3">다른 설비 상식</h2><div class="guide-grid">{"".join(guide_card(x) for x in other)}</div>'
                   if other else '')
     body = f'''
+<div class="readbar" aria-hidden="true"><i></i></div>
 <article class="sec page-head">
   <div class="wrap narrow">
     <nav class="crumb" aria-label="위치"><a href="{u('')}">홈</a> / <a href="{u('guide/')}">설비 상식</a></nav>
@@ -649,6 +704,8 @@ def guide_page(g):
     <h1 class="h1">{esc(g['title'])}</h1>
     <p class="lead">{esc(g.get('description', ''))}</p>
     {cover_html}
+    {toc_html(g['body'])}
+    {selfcheck_html(g)}
     <div class="prose">{md_to_html(g['body'])}</div>
     {author_box()}
     {call_block('혼자 해결이 어렵다면 전화 주세요', f"{esc(B['hours'])} · {esc(B['region'])} 출동")}
@@ -732,6 +789,7 @@ def local_page(l):
     <p class="lead">{esc(l.get('lead', l.get('description', '')))}</p>
     {('<div class="summary"><p class="summary-t">한눈에 보기</p><p>' + inline(l['summary']) + '</p><p class="summary-d">' + esc(l.get('updated', '')) + ' 기준 · ' + esc(B['name']) + ' · ' + esc(B['phone']) + '</p></div>') if l.get('summary') else ''}
     {call_block(l.get('cta_title', '지금 바로 상담하세요'), l.get('cta_sub', '사진을 문자로 보내 주시면 먼저 봐 드립니다.'))}
+    {selfcheck_html(l)}
     <div class="prose">{md_to_html(l['body'])}</div>
   </div>
 </section>
