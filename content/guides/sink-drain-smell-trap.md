@@ -4,7 +4,7 @@ description: "싱크대 하수구 냄새는 거름망 찌꺼기, 트랩에 고�
 category: drain
 service: drain
 date: 2026-11-13
-related_cases: 2026-02-cheonan-sink-drain-scaling
+related_cases: 2026-02-cheonan-sink-drain-scaling, 2026-01-dongtan-apartment-washbasin-trap-leak
 thumb_title: "청소했는데|왜 *냄새가* 날까?"
 thumb_sub: "싱크대 냄새 마개, 트랩부터 보세요"
 cover: /guides/sink-drain-smell-trap/sink-smell-three-spots.jpg
@@ -33,6 +33,11 @@ selfcheck_n: 2
 ## 바닥 배수관 연결부는 왜 냄새가 새나요?
 
 싱크대 호스는 바닥에서 올라온 배수관에 꽂혀 있습니다. 이 자리를 고무 마개(실링캡)나 패킹으로 단단히 막아야 하는데, 호스만 헐겁게 꽂혀 있거나 마개가 낡아 틈이 생기면 **트랩을 지나지 않은 하수관 공기**가 그 틈으로 바로 올라옵니다. 하부장을 열었을 때 냄새가 확 난다면 이 자리를 먼저 의심해 보세요.
+
+![실제 현장 사진: 세면대 아래 트랩과 연결부](/guides/sink-drain-smell-trap/trap-real-connection.jpg)
+
+![실제 현장 사진: 벽 하수구와 배수관 사이 틈을 메운 자리](/guides/sink-drain-smell-trap/trap-real-wall-gap.jpg)
+실제 현장 사진 · 동탄 아파트 세면대 트랩 교체 ([현장 글 보기](/case/2026-01-dongtan-apartment-washbasin-trap-leak/)). 싱크대 아래도 구조는 같습니다.
 
 ## 직접 확인하는 순서는?
 

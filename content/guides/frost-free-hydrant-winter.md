@@ -4,7 +4,7 @@ description: "마당·옥상의 부동전은 땅속 밸브를 잠그면 관 속 
 category: season
 service: inspect
 date: 2026-11-11
-related_cases: 2026-10-godeok-villa-heating-thermal-check
+related_cases: 2026-02-yongin-house-frost-free-hydrant-replacement, 2026-10-godeok-villa-heating-thermal-check
 thumb_title: "부동전인데|왜 *얼었을까?*"
 thumb_sub: "'얼지 않는 수도'도 잠그는 법이 따로 있어요"
 cover: /guides/frost-free-hydrant-winter/hydrant-how-it-works.jpg
@@ -34,6 +34,13 @@ selfcheck_n: 2
 - **호스나 물총을 꽂아 둔 채 둘 때** — 호스 속에 남은 물이 얼면 토수구가 막히고, 관 속 물도 잘 빠지지 않을 수 있습니다.
 - **속 패킹(수밀링)이 낡았을 때** — 오래 쓰면 패킹이 닳거나 밀려서 퇴수구멍을 제대로 여닫지 못합니다. 잠가도 물이 잘 안 빠지거나, 반대로 퇴수구멍으로 물이 계속 새기도 합니다.
 - **얕게 묻혔거나 주변 땅이 물을 못 받을 때** — 밸브가 얼지 않는 깊이까지 들어가 있지 않거나, 퇴수구멍 주변이 콘크리트·진흙으로 막혀 있으면 빠진 물이 갈 곳이 없습니다.
+
+잠가도 물이 멈추지 않는다면 보온보다 부동전 자체를 봐야 합니다. 용인 단독주택 현장은 속 부속이 고장 나 손잡이를 끝까지 잠가도 물이 흘렀고, 땅을 파서 부동전을 통째로 바꿨습니다([현장 글 보기](/case/2026-02-yongin-house-frost-free-hydrant-replacement/)).
+
+![실제 현장 사진: 잠가도 물이 새서 주변 바닥이 젖어 있던 교체 전 부동전](/guides/frost-free-hydrant-winter/hydrant-real-leaking.jpg)
+
+![실제 현장 사진: 땅을 파서 드러난, 땅속으로 이어진 부동전 몸통](/guides/frost-free-hydrant-winter/hydrant-real-dug-out.jpg)
+실제 현장 사진 · 용인 단독주택 부동전 교체
 
 ## 겨울철 보온은 어떻게 하나요?
 
