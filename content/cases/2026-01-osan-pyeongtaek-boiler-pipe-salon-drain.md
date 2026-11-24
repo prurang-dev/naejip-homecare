@@ -1,5 +1,5 @@
 ---
-title: "누수 위치가 보일 때는 바로 교체: 오산 단독주택 보일러 온수 배관, 평택 동삭동 미용실 샴푸대 하수 배관"
+title: "보이는 누수는 바로 교체: 오산 보일러 온수 배관, 평택 미용실 샴푸대 배관"
 description: "오산 단독주택은 보일러 안 온수 배관에서 물이 물총처럼 뿜어져 PB 배관으로 바꿨고, 평택 동삭동 1층 미용실은 샴푸대 아래 하수 드레인 배관이 노후로 찢어져 새 배관으로 교체했습니다. 새는 곳이 눈에 보여 탐지 없이 바로 교체한 두 현장입니다."
 cover: /cases/2026-01-osan-pyeongtaek-boiler-pipe-salon-drain/salon-torn-drain-hose.jpg
 service: leak

@@ -1,5 +1,5 @@
 ---
-title: "용인 기흥 마북 아파트 아랫집 베란다 천장 물샘, 배관이 아니라 빠진 보일러 드레인과 깨진 줄눈"
+title: "용인 마북 아파트 아랫집 베란다 천장 물샘, 원인은 빠진 보일러 드레인과 깨진 줄눈"
 description: "용인 기흥 마북 아파트에서 아랫집 베란다 천장에 물이 떨어진 현장입니다. 위층 배관 공압 점검으로 배관 누수가 아님을 확인하고, 빠진 보일러 드레인 배관과 벽·바닥 사이 깨진 줄눈을 찾아 해동·줄눈 보수·배관 재연결로 마무리했습니다."
 cover: /cases/2026-01-yongin-mabuk-veranda-boiler-drain-grout/wet-floor-under-storage.jpg
 service: leak

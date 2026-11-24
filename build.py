@@ -34,6 +34,28 @@ def u(path):
     return BASE + path.lstrip('/')
 
 
+_VM_PATH = os.path.join(ROOT, 'static/v/manifest.json')
+VMAN = json.load(open(_VM_PATH, encoding='utf-8')) if os.path.exists(_VM_PATH) else {}
+
+
+def pic(src, alt='', sizes='100vw', lazy=True, cls='', priority=False):
+    """사진 태그. tools/make_variants.py 가 만든 WebP(640·1200)가 있으면 <picture>로 먼저 내보내고,
+    원본 크기를 width/height 로 넣어 화면 밀림을 막는다."""
+    rel = src.lstrip('/')
+    m = VMAN.get(rel)
+    attrs = f' class="{cls}"' if cls else ''
+    attrs += ' loading="lazy"' if lazy else ''
+    attrs += ' fetchpriority="high"' if priority else ''
+    if m:
+        attrs += f' width="{m["w"]}" height="{m["h"]}"'
+    img = f'<img src="{u(src)}" alt="{esc(alt)}"{attrs} decoding="async">'
+    if not m:
+        return img
+    stem = os.path.splitext(rel)[0]
+    srcset = ', '.join(f'{u("v/" + stem + "-" + str(w) + ".webp")} {w}w' for w in m['v'])
+    return f'<picture><source type="image/webp" srcset="{srcset}" sizes="{sizes}">{img}</picture>'
+
+
 def esc(s):
     return html.escape(str(s), quote=True)
 
@@ -79,7 +101,7 @@ def md_to_html(md):
         m = re.match(r'^!\[(.*?)\]\((.+?)\)$', first)
         if m and len(lines) <= 2:
             cap = inline(lines[1]) if len(lines) == 2 else esc(m.group(1))
-            out.append(f'<figure class="fig"><img src="{u(m.group(2))}" alt="{esc(m.group(1))}" loading="lazy" decoding="async">'
+            out.append(f'<figure class="fig">{pic(m.group(2), m.group(1), '(min-width: 760px) 720px, 100vw')}'
                        f'<figcaption>{cap}</figcaption></figure>')
             continue
         if first.startswith('### '):
@@ -204,8 +226,10 @@ def page(title, desc, path, body, og_image=None):
 <meta name="theme-color" content="#0B1F3A">
 <link rel="icon" href="{u('favicon.svg')}" type="image/svg+xml">
 <link rel="apple-touch-icon" href="{u('apple-touch-icon.png')}">
-<link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preload" as="style" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"></noscript>
 <link rel="stylesheet" href="{u('assets/site.css')}?v={CSS_VER}">
 {(f'<script async src="https://www.googletagmanager.com/gtag/js?id={B["ga4_id"]}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments)}}gtag("js",new Date());gtag("config","{B["ga4_id"]}");document.addEventListener("click",function(e){{var a=e.target.closest&&e.target.closest("a[href^=\'tel:\'],a[href^=\'sms:\']");if(a){{gtag("event",a.href.indexOf("tel:")===0?"phone_click":"sms_click",{{link_location:(a.className||"link"),page_path:location.pathname}});}}}});</script>') if B.get('ga4_id') and INDEX else ''}
 <script type="application/ld+json">{ld_business()}</script>
@@ -223,7 +247,7 @@ def page(title, desc, path, body, og_image=None):
       {guide_nav}
       {area_nav}
     </nav>
-    <a class="top-call" href="tel:{TEL}">{icon('phone', 18)}<span>{esc(B['phone'])}</span></a>
+    <a class="top-call" href="tel:{TEL}" aria-label="전화 상담 {esc(B['phone'])}">{icon('phone', 18)}<span>{esc(B['phone'])}</span></a>
     <details class="mnav">
       <summary aria-label="메뉴 열기"><span class="mnav-bars" aria-hidden="true"><i></i><i></i><i></i></span></summary>
       <nav class="mnav-panel" aria-label="모바일 메뉴">
@@ -291,7 +315,7 @@ def call_block(title, sub):
 def case_card(c, small=False):
     cover = c.get('cover') or (c['images'][0]['src'] if c['images'] else '')
     return f'''<a class="case-card" href="{u('case/' + c['slug'] + '/')}">
-  <span class="case-img"><img src="{u(cover)}" alt="" loading="lazy" decoding="async"></span>
+  <span class="case-img">{pic(cover, '', '(min-width: 1000px) 360px, (min-width: 640px) 50vw, 100vw')}</span>
   <span class="case-meta"><span class="tag">{esc(SERVICE.get(c.get('service'), ''))}</span><span>{esc(case_place(c))}</span></span>
   <span class="case-title">{esc(c['title'])}</span>
 </a>'''
@@ -312,8 +336,9 @@ def home():
         '2026-11-songtan-villa-floor-heating-leak', '2026-11-03-cheonan-buldang-villa-hotwater-leak',
         '2026-11-yeoksam-villa-bathroom-dye-test', '2026-10-godeok-villa-heating-thermal-check'] if s in BY_SLUG]
     hero_grid = ''.join(
-        f'<a class="hp" href="{u("case/" + c["slug"] + "/")}"><img src="{u(c["cover"])}" alt="{esc(case_place(c))} 실제 현장 사진" '
-        f'loading="eager" decoding="async"><span>{esc(case_place(c))}</span></a>' for c in hero_pics)
+        f'<a class="hp" href="{u("case/" + c["slug"] + "/")}">'
+        f'{pic(c["cover"], case_place(c) + " 실제 현장 사진", "(min-width: 1000px) 300px, 50vw", lazy=False, priority=(i == 0))}'
+        f'<span>{esc(case_place(c))}</span></a>' for i, c in enumerate(hero_pics))
 
     symptoms = [
         ('ceiling', '아랫집 천장에 물이 샌다', '위층 배관·욕실 방수·유가 문제일 수 있어요'),
@@ -338,7 +363,7 @@ def home():
         ('담수·색소 테스트', '방수 문제인지 하수관 문제인지, 색으로 원인을 가립니다.', '2026-11-yeoksam-villa-bathroom-dye-test'),
     ]
     eq_html = ''.join(f'''<a class="eq" href="{u('case/' + s + '/')}">
-  <span class="eq-img"><img src="{u(BY_SLUG[s]['cover'])}" alt="{esc(n)} 실제 사용 현장" loading="lazy" decoding="async"></span>
+  <span class="eq-img">{pic(BY_SLUG[s]['cover'], n + ' 실제 사용 현장', '(min-width: 760px) 360px, 100vw')}</span>
   <span class="eq-body"><span class="eq-n">{esc(n)}</span><span class="eq-d">{esc(d)}</span>
   <span class="eq-link">{esc(case_place(BY_SLUG[s]))} 현장 보기 {icon('arrow', 15)}</span></span>
 </a>''' for n, d, s in equip if s in BY_SLUG)
@@ -478,7 +503,7 @@ def case_list():
   </div>
 </section>
 <section class="sec"><div class="wrap">{call_block('비슷한 증상이 있나요?', '사진을 문자로 보내 주시면 더 빠르게 상담해 드립니다.')}</div></section>'''
-    return page(f"시공 사례 | {B['name']}", f"{' · '.join(B['areas'])} 누수탐지·하수구·배관 실제 시공 사례 {len(CASES)}건", 'case/', body)
+    return page(f"시공 사례 | {B['name']}", f"{' · '.join(B['areas'])} 누수탐지·하수구 막힘·배관 공사 실제 현장 {len(CASES)}건. 아랫집 누수, 바닥 물 올라옴, 변기·싱크대 막힘을 장비로 원인부터 찾아 고친 과정을 사진과 함께 보여 드립니다.", 'case/', body)
 
 
 SVC_GUIDE_CATS = {'leak': ['leak', 'cost', 'heating', 'bath', 'season', 'pipe'], 'drain': ['drain', 'bath'], 'inspect': ['heating', 'leak']}
@@ -511,7 +536,7 @@ def toc_html(md):
 
 def case_page(c):
     gallery = ''.join(
-        f'<figure><img src="{u(im["src"])}" alt="{esc(im.get("alt", ""))}" loading="lazy" decoding="async">'
+        f'<figure>{pic(im["src"], im.get("alt", ""), "(min-width: 760px) 720px, 100vw")}'
         f'<figcaption>{esc(im.get("alt", ""))}</figcaption></figure>' for im in c['images'])
     video = ''
     if c.get('video'):
@@ -540,7 +565,7 @@ def case_page(c):
     <p class="case-meta big"><span class="tag">{esc(SERVICE.get(c.get('service'), ''))}</span><span>{esc(case_place(c))}</span><span>{esc(c.get('building', ''))}</span><span>{esc(case_date(c))}</span></p>
     <h1 class="h1">{esc(c['title'])}</h1>
     <p class="lead">{esc(c.get('description', ''))}</p>
-    <img class="cover" src="{u(cover)}" alt="{esc(c['title'])}" decoding="async">
+    {pic(cover, c['title'], '(min-width: 760px) 720px, 100vw', lazy=False, cls='cover', priority=True)}
     <div class="mini-cta"><span>같은 증상이라면 지금 바로 상담하세요</span><a class="btn btn-call" href="tel:{TEL}">{icon('phone', 18)}<span>{esc(B['phone'])}</span></a></div>
     {video}
     <div class="prose">{md_to_html(c['body'])}</div>
@@ -630,7 +655,7 @@ def ld_case(c):
 # ---------------- guides (설비 상식) ----------------
 def guide_card(g):
     thumb = f"guides/{g['slug']}/thumb.jpg"
-    img = (f'<span class="guide-img"><img src="{u(thumb)}" alt="" loading="lazy" decoding="async"></span>'
+    img = (f'<span class="guide-img">{pic(thumb, '', '(min-width: 1000px) 360px, (min-width: 640px) 50vw, 100vw')}</span>'
            if os.path.exists(os.path.join(ROOT, 'static', thumb)) else '')
     return f'''<a class="guide-card{' has-img' if img else ''}" href="{u('guide/' + g['slug'] + '/')}">{img}
   <span class="tag">{esc(GUIDE_CAT.get(g.get('category'), '설비 상식'))}</span>
@@ -664,7 +689,7 @@ def guide_list():
   </div>
 </section>
 <section class="sec"><div class="wrap">{call_block('직접 해결이 어렵다면', '사진을 문자로 보내 주시면 먼저 봐 드립니다.')}</div></section>'''
-    return page(f"설비 상식 | {B['name']}", "누수·하수구·배관 문제를 겪을 때 알아 두면 좋은 정보", 'guide/', body)
+    return page(f"설비 상식 | {B['name']}", "누수·하수구 막힘·동파처럼 집에서 생기는 배관 문제, 직접 확인하는 방법과 업체를 불러야 할 때를 20년 넘게 현장을 다닌 설비 대표가 실제 사례와 함께 정리했습니다.", 'guide/', body)
 
 
 def ld_article(g):
@@ -694,7 +719,7 @@ def guide_page(g):
         other += [x for x in GUIDES if x['slug'] != g['slug'] and x not in other][:3 - len(other)]
     cover = g.get('cover', '')
     # 본문에 이미 들어간 그림이면 상단 대표 이미지로 다시 보여주지 않는다(중복·잘림 방지)
-    cover_html = (f'<img class="cover" src="{u(cover)}" alt="{esc(g["title"])}" decoding="async">'
+    cover_html = (pic(cover, g["title"], '(min-width: 760px) 720px, 100vw', lazy=False, cls='cover', priority=True)
                   if cover and cover not in g['body'] else '')
     cases_html = (f'<h2 class="h3">관련 시공 사례</h2><div class="case-grid three">{"".join(case_card(c) for c in rel_cases[:3])}</div>'
                   if rel_cases else '')
@@ -857,7 +882,17 @@ def main():
     if INDEX and SITE_URL:
         urls = [u('')] + ([u('area/')] if LOCALS else []) + [u(f"area/{l['slug']}/") for l in LOCALS] + [u('case/')] + [u(f"case/{c['slug']}/") for c in CASES] + \
             ([u('guide/')] + [u(f"guide/{g['slug']}/") for g in GUIDES] if GUIDES else [])
-        sm = ''.join(f'<url><loc>{esc(SITE_URL + x)}</loc></url>' for x in urls)
+        def _iso(d):
+            parts = [p for p in str(d or '').split('-') if p]
+            return '-'.join(parts) if len(parts) == 3 else ''
+        _lp = os.path.join(ROOT, 'data/lastmod.json')   # tools/update_lastmod.py 가 만든 실제 게시·수정일
+        LMD = json.load(open(_lp, encoding='utf-8')) if os.path.exists(_lp) else {}
+        lm = {u(f"case/{c['slug']}/"): LMD.get(f"case/{c['slug']}") or _iso(c.get('updated') or c.get('date')) for c in CASES}
+        lm.update({u(f"guide/{g['slug']}/"): LMD.get(f"guide/{g['slug']}") or _iso(g.get('updated') or g.get('date')) for g in GUIDES})
+        newest = max([v for v in lm.values() if v] or [''])
+        for x in [u(''), u('case/'), u('guide/'), u('area/')]:
+            lm.setdefault(x, newest)
+        sm = ''.join(f'<url><loc>{esc(SITE_URL + x)}</loc>' + (f'<lastmod>{lm[x]}</lastmod>' if lm.get(x) else '') + '</url>' for x in urls)
         write('sitemap.xml', f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{sm}</urlset>')
         write('robots.txt', f'User-agent: *\nAllow: /\nSitemap: {SITE_URL}{u("sitemap.xml")}\n')
     else:

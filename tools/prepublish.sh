@@ -13,6 +13,8 @@ OPS=""; for d in ../naejip-ops ../ops; do [ -d "$d/.git" ] && OPS="$d" && break;
 if [ -n "$OPS" ]; then python3 tools/watermark.py --backup "$OPS/originals"; else python3 tools/watermark.py; echo "경고: 운영 저장소를 못 찾아 원본 보관 없이 워터마크만 찍음"; fi
 python3 tools/make_posters.py
 python3 tools/make_og.py
+python3 tools/make_variants.py
+python3 tools/update_lastmod.py
 BASE="/" SITE_URL="https://naezipcare.kr" INDEX=1 python3 build.py
 python3 tools/check.py --strict "$@"
 python3 tools/preview.py "$@"
