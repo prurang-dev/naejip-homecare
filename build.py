@@ -312,10 +312,10 @@ def call_block(title, sub):
 </div>'''
 
 
-def case_card(c, small=False):
+def case_card(c, small=False, first=False):
     cover = c.get('cover') or (c['images'][0]['src'] if c['images'] else '')
     return f'''<a class="case-card" href="{u('case/' + c['slug'] + '/')}">
-  <span class="case-img">{pic(cover, '', '(min-width: 1000px) 360px, (min-width: 640px) 50vw, 100vw')}</span>
+  <span class="case-img">{pic(cover, '', '(min-width: 1000px) 360px, (min-width: 640px) 50vw, 100vw', lazy=not first, priority=first)}</span>
   <span class="case-meta"><span class="tag">{esc(SERVICE.get(c.get('service'), ''))}</span><span>{esc(case_place(c))}</span></span>
   <span class="case-title">{esc(c['title'])}</span>
 </a>'''
@@ -499,7 +499,7 @@ def case_list():
     <p class="eyebrow">시공 사례</p>
     <h1 class="h1">실제 현장 {len(CASES)}건</h1>
     <p class="lead">모든 사진은 저희가 직접 작업한 현장입니다.</p>
-    <div class="case-grid">{''.join(case_card(c) for c in CASES)}</div>
+    <div class="case-grid">{''.join(case_card(c, first=(i == 0)) for i, c in enumerate(CASES))}</div>
   </div>
 </section>
 <section class="sec"><div class="wrap">{call_block('비슷한 증상이 있나요?', '사진을 문자로 보내 주시면 더 빠르게 상담해 드립니다.')}</div></section>'''
