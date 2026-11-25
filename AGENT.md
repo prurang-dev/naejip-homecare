@@ -37,3 +37,4 @@
    g) 마지막 점검: 글을 처음부터 소리 내어 읽듯 훑어 어색한 문장을 고친다. 사실·숫자·지명은 바꾸지 않는다.
    h) 점검 도구: `python3 tools/style_check.py <글.md>` 로 굵은 글씨·줄표·상투구·목록 수·같은 말끝 3연속을 잡는다. 경고를 0~2개까지 줄인 뒤 prepublish 한다(네이버 초안 naver.md도 같은 도구로 점검).
 28. 사진 가벼운 판·사이트맵 날짜(2026-11-24 도입). prepublish.sh 가 tools/make_variants.py(static/v/ 에 WebP 640·1200 + manifest.json)와 tools/update_lastmod.py(data/lastmod.json)를 자동으로 돌린다. CI 에는 Pillow·git 기록이 없으므로 이 결과물을 반드시 같이 커밋한다: 게시 때 git add 에 static/v data/lastmod.json 포함. 초안 확인 뒤 작업 사본을 되돌릴 때는 `git checkout -- static/v data/lastmod.json && git clean -fdq static/v` 도 함께 한다.
+29. 현장 글 '한눈에 보기'(2026-11-25 디자인 개편). 현장 글 frontmatter에 `facts: "증상|원인|작업"` 세 칸을 넣는다(각 40자 안팎, 그 글 본문·메모에 있는 사실만). 새 현장 초안은 처음부터 넣어 승인 요청에 함께 보여 준다. facts 가 없는 기존 글은 채운 안을 만들어 길남에게 승인받은 뒤에만 게시한다.
