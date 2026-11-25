@@ -7,6 +7,7 @@ area: anseong
 dong: 아양동
 building: 아파트 1층
 date: 2026-11-20
+facts: "변기 물이 내려가지 않고, 변기를 떼고 위에서 뚫어도 안 뚫림|지하 천장의 주철관과 PVC 배관 연결부가 화장지·이물질로 막힘|PVC 배관 윗부분에 50mm 구멍을 내고 샤프트로 뚫음"
 images:
   - src: /cases/2026-11-anseong-toilet-clog/toilet-removed-flange.jpg
     alt: 안성 아양동 아파트 1층 욕실, 변기를 떼어 낸 자리의 오수관 입구

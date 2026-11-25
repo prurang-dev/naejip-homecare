@@ -312,11 +312,27 @@ def call_block(title, sub):
 </div>'''
 
 
+def stamp_date(c):
+    parts = [x for x in str(c.get('date', '')).split('-') if x]
+    if len(parts) >= 3:
+        return f"{int(parts[1])}.{int(parts[2]):02d}"
+    if len(parts) == 2:
+        return f"{int(parts[1])}월"
+    return ''
+
+
+def stamp(c, sub=''):
+    """사진 위 현장 기록 표시: 작업한 날짜 + 동네(+ 한 줄)."""
+    d = stamp_date(c)
+    return (f'<span class="stamp">{f"<b>{esc(d)}</b>" if d else ""}<span>{esc(case_place(c))}</span>'
+            f'{f"<i>{esc(sub)}</i>" if sub else ""}</span>')
+
+
 def case_card(c, small=False, first=False):
     cover = c.get('cover') or (c['images'][0]['src'] if c['images'] else '')
     return f'''<a class="case-card" href="{u('case/' + c['slug'] + '/')}">
-  <span class="case-img">{pic(cover, '', '(min-width: 1000px) 360px, (min-width: 640px) 50vw, 100vw', lazy=not first, priority=first)}</span>
-  <span class="case-meta"><span class="tag">{esc(SERVICE.get(c.get('service'), ''))}</span><span>{esc(case_place(c))}</span></span>
+  <span class="case-img">{pic(cover, '', '(min-width: 1000px) 360px, (min-width: 640px) 50vw, 100vw', lazy=not first, priority=first)}{stamp(c)}</span>
+  <span class="case-meta"><span class="tag">{esc(SERVICE.get(c.get('service'), ''))}</span><span>{esc(c.get('building', ''))}</span></span>
   <span class="case-title">{esc(c['title'])}</span>
 </a>'''
 
@@ -333,27 +349,43 @@ def home():
     trust_html = ''.join(f'<li>{icon("check", 18)}<span>{esc(t)}</span></li>' for t in trust)
 
     hero_pics = [BY_SLUG[s] for s in [
-        '2026-11-songtan-villa-floor-heating-leak', '2026-11-03-cheonan-buldang-villa-hotwater-leak',
-        '2026-11-yeoksam-villa-bathroom-dye-test', '2026-10-godeok-villa-heating-thermal-check'] if s in BY_SLUG]
-    hero_grid = ''.join(
-        f'<a class="hp" href="{u("case/" + c["slug"] + "/")}">'
-        f'{pic(c["cover"], case_place(c) + " 실제 현장 사진", "(min-width: 1000px) 300px, 50vw", lazy=False, priority=(i == 0))}'
-        f'<span>{esc(case_place(c))}</span></a>' for i, c in enumerate(hero_pics))
+        '2026-10-godeok-villa-heating-thermal-check', '2026-11-03-cheonan-buldang-villa-hotwater-leak',
+        '2026-11-songtan-villa-floor-heating-leak', '2026-11-yeoksam-villa-bathroom-dye-test'] if s in BY_SLUG]
+    hero_main = ''
+    if hero_pics:
+        h = hero_pics[0]
+        hero_main = (f'<a class="hx-main" href="{u("case/" + h["slug"] + "/")}">'
+                     f'{pic(h["cover"], case_place(h) + " 실제 현장 사진", "(min-width: 1000px) 560px, 100vw", lazy=False, priority=True)}'
+                     f'{stamp(h, "열화상으로 바닥 속 난방 배관 확인")}</a>')
+    hero_row = ''.join(
+        f'<a class="hx-s" href="{u("case/" + c["slug"] + "/")}">'
+        f'{pic(c["cover"], case_place(c) + " 실제 현장 사진", "(min-width: 1000px) 180px, 33vw", lazy=False)}'
+        f'{stamp(c)}</a>' for c in hero_pics[1:4])
 
+    # 증상 → 실제 비슷한 현장(사진도 그 현장 것)
     symptoms = [
-        ('ceiling', '아랫집 천장에 물이 샌다', '위층 배관·욕실 방수·유가 문제일 수 있어요'),
-        ('floor', '바닥·장판 밑에서 물이 올라온다', '바닥 속 난방·온수 배관 누수 가능성'),
-        ('drain', '싱크대·하수구가 막혔다', '물이 안 내려가거나 역류할 때'),
-        ('toilet', '변기가 막혔다', '뚫어뻥으로 안 될 때, 넘칠 때'),
-        ('won', '수도요금이 갑자기 올랐다', '보이지 않는 곳에서 새고 있을 수 있어요'),
-        ('drop', '욕실 배수구 주변이 샌다', '유가 둘레·줄눈 틈으로 스며드는 경우'),
+        ('아랫집 천장에 물이 샌다', '위층 배관·욕실 방수·유가 문제일 수 있어요', '2026-11-cheonan-dongnam-apt-aircon-drain-laundry-leak', None),
+        ('바닥·장판 밑에서 물이 올라온다', '바닥 속 난방·온수 배관이 새는 경우가 많아요', '2026-11-songtan-villa-floor-heating-leak', None),
+        ('싱크대·하수구가 막혔다', '물이 안 내려가거나 거꾸로 올라올 때', '2026-02-cheonan-sink-drain-scaling', None),
+        ('변기가 막혔다', '뚫어뻥으로 안 될 때, 물이 넘칠 때', '2026-11-anseong-ayang-apt-toilet-sewer-clog', None),
+        ('수도요금이 갑자기 올랐다', '안 보이는 곳에서 새고 있을 수 있어요', '2025-12-pyeongtaek-seojeong-shop-house-two-meters-leak',
+         '/cases/2025-12-pyeongtaek-seojeong-shop-house-two-meters-leak/air-pressure-test-gauge.jpg'),
+        ('욕실 배수구 주변이 샌다', '유가 둘레·줄눈 틈으로 스며드는 경우', '2026-11-paengseong-bathroom-drain-grout', None),
     ]
-    sym_html = ''.join(f'''<a class="sym" href="tel:{TEL}">
-  <span class="sym-ico">{icon(ic, 26)}</span>
-  <span class="sym-t">{esc(t)}</span>
-  <span class="sym-d">{esc(d)}</span>
-  <span class="sym-go">{icon('phone', 15)} 바로 상담</span>
-</a>''' for ic, t, d in symptoms)
+    sym_rows = []
+    for t, d, sl, img in symptoms:
+        c = BY_SLUG.get(sl)
+        if not c:
+            continue
+        sym_rows.append(f'''<li class="sy">
+  <a class="sy-a" href="{u('case/' + sl + '/')}">
+    <span class="sy-img">{pic(img or c['cover'], '', '120px')}</span>
+    <span class="sy-txt"><span class="sy-t">{esc(t)}</span><span class="sy-d">{esc(d)}</span>
+    <span class="sy-c">비슷한 현장: {esc(case_place(c))} {esc(c.get('building', ''))}</span></span>
+  </a>
+  <a class="sy-call" href="tel:{TEL}" aria-label="{esc(t)} 전화 상담">{icon('phone', 20)}</a>
+</li>''')
+    sym_html = ''.join(sym_rows)
 
     equip = [
         ('가압 테스트', '배관에 압력을 걸어 어느 배관이 새는지 숫자로 확인합니다.', '2026-11-03-cheonan-buldang-villa-hotwater-leak'),
@@ -362,13 +394,14 @@ def home():
         ('관로탐지기', '도면 없는 건물에서도 하수구 배관이 지나가는 길을 찾습니다.', '2026-11-yeoksam-stairs-drain-locating'),
         ('담수·색소 테스트', '방수 문제인지 하수관 문제인지, 색으로 원인을 가립니다.', '2026-11-yeoksam-villa-bathroom-dye-test'),
     ]
-    eq_html = ''.join(f'''<a class="eq" href="{u('case/' + s + '/')}">
-  <span class="eq-img">{pic(BY_SLUG[s]['cover'], n + ' 실제 사용 현장', '(min-width: 760px) 360px, 100vw')}</span>
-  <span class="eq-body"><span class="eq-n">{esc(n)}</span><span class="eq-d">{esc(d)}</span>
-  <span class="eq-link">{esc(case_place(BY_SLUG[s]))} 현장 보기 {icon('arrow', 15)}</span></span>
+    eq_html = ''.join(f'''<a class="eq2" href="{u('case/' + s + '/')}">
+  <span class="eq2-img">{pic(BY_SLUG[s]['cover'], n + ' 실제 사용 현장', '(min-width: 760px) 260px, 70vw')}{stamp(BY_SLUG[s])}</span>
+  <span class="eq2-n">{esc(n)}</span><span class="eq2-d">{esc(d)}</span>
 </a>''' for n, d, s in equip if s in BY_SLUG)
 
     cases_html = ''.join(case_card(c) for c in CASES[:6])
+    guides_rows = ''.join(f'''<li><a href="{u('guide/' + g['slug'] + '/')}"><b>{esc(g['title'])}</b><span>{esc(g.get('description', ''))}</span></a></li>'''
+                          for g in GUIDES[:4])
 
     reviews_html = ''
     if RV.get('reviews'):
@@ -378,22 +411,21 @@ def home():
             img = f'<img src="{u(r["image"])}" alt="{esc(r.get("source", ""))} 실제 리뷰 캡처" loading="lazy">' if r.get('image') else ''
             cards.append(f'<figure class="rv"><p class="rv-stars" aria-label="별점 {len(stars)}점">{stars}</p>'
                          f'<blockquote>{esc(r.get("text", ""))}</blockquote>{img}'
-                         f'<figcaption>{esc(r.get("area", ""))} · {esc(r.get("source", ""))} 리뷰</figcaption></figure>')
-        links = ''.join(f'<a class="more" href="{esc(url)}">{label} 리뷰 전체 보기 {icon("arrow", 16)}</a>'
+                         f'<figcaption>{esc(r.get("area", ""))} {esc(r.get("source", ""))} 리뷰</figcaption></figure>')
+        links = ''.join(f'<a class="more" href="{esc(url)}">{label} 리뷰 전체 보기</a>'
                         for label, url in [('구글', RV.get('google_review_url')), ('네이버', RV.get('naver_place_url'))] if url)
-        reviews_html = f'''<section class="sec" id="reviews">
+        reviews_html = f'''<section class="s2" id="reviews">
   <div class="wrap">
-    <div class="sec-head"><div><p class="eyebrow">고객 리뷰</p><h2 class="h2">직접 맡겨 보신 분들의 이야기</h2></div><div>{links}</div></div>
+    <div class="s2-head"><h2 class="h2">직접 맡겨 보신 분들의 이야기</h2><div>{links}</div></div>
     <div class="rv-grid">{''.join(cards)}</div>
   </div>
 </section>'''
 
     steps = [('전화·문자 상담', '증상을 말씀해 주세요. 사진을 보내 주시면 더 정확합니다.'),
-             ('방문 · 원인 확인', '장비로 새는 곳, 막힌 곳을 먼저 찾습니다.'),
-             ('견적 안내 후 작업', '확인한 원인과 작업 범위를 설명드리고 시작합니다.'),
-             ('결과 공유', '작업 전후 사진과 영상으로 결과를 보여드립니다.')]
-    steps_html = ''.join(f'<li><span class="st-n">{i}</span><span class="st-t">{esc(t)}</span><span class="st-d">{esc(d)}</span></li>'
-                         for i, (t, d) in enumerate(steps, 1))
+             ('방문해서 원인 확인', '장비로 새는 곳, 막힌 곳을 먼저 찾습니다.'),
+             ('설명드리고 작업', '확인한 원인과 작업 범위를 말씀드린 뒤 시작합니다.'),
+             ('사진·영상으로 결과 공유', '작업 전후를 사진과 영상으로 보여 드립니다.')]
+    steps_html = ''.join(f'<li><span class="st2-t">{esc(t)}</span><span class="st2-d">{esc(d)}</span></li>' for t, d in steps)
 
     faqs = [
         ('어디서 새는지 모르는데 불러도 되나요?', '네. 원인을 찾는 것부터가 저희 일입니다. 가압 테스트, 가스 탐지, 열화상, 색소 테스트 등 상황에 맞는 장비로 새는 배관과 위치를 먼저 확인합니다.'),
@@ -402,88 +434,84 @@ def home():
         ('욕실 방수를 전부 다시 해야 하나요?', '원인이 유가 둘레나 줄눈처럼 한 부분에 있다면 그 부분만 고쳐 비용을 줄일 수 있습니다. 하수관 문제라면 방수를 해도 계속 새기 때문에, 테스트로 원인을 먼저 가립니다.'),
     ]
     faq_html = ''.join(f'<details class="faq"><summary>{esc(q)}</summary><p>{esc(a)}</p></details>' for q, a in faqs)
-
     area_html = ''.join(f'<li class="chip chip-strong">{icon("pin", 16)}{esc(a)}</li>' for a in B['areas']) + \
         ''.join(f'<li class="chip">{esc(a)}</li>' for a in B['areas_more'])
+    local_links = ''.join(f'<a href="{u("area/" + l["slug"] + "/")}">{esc(l["title"])} 안내</a>' for l in LOCALS)
+    exp = B.get('experience_label') or ''
+    owner = '' if B['owner'].startswith('[') else B['owner']
 
     body = f'''
-<section class="hero">
-  <div class="wrap hero-in">
-    <div class="hero-text">
-      <p class="live"><span class="dot" aria-hidden="true"></span>{esc(B['hours'])} · {esc(B['region'])} 출동</p>
-      <h1>물이 새거나 막혔나요?<br><em>지금 전화 주세요.</em></h1>
-      <p class="hero-sub">누수탐지 · 하수구 · 배관 공사. 장비로 원인부터 찾고, 필요한 곳만 고칩니다.</p>
-      <div class="hero-cta">
-        <a class="btn btn-call btn-xl" href="tel:{TEL}">{icon('phone', 26)}<span class="b-col"><small>터치하면 바로 연결</small><span>{esc(B['phone'])}</span></span></a>
+<section class="hx">
+  <div class="wrap hx-in">
+    <div class="hx-text">
+      <p class="live"><span class="dot" aria-hidden="true"></span>{esc(B['hours'])}, {esc(B['region'])} 출동</p>
+      <h1>물이 새거나 막혔나요?<br>지금 전화 주세요.</h1>
+      <p class="hx-sub">장비로 원인부터 찾고, 필요한 곳만 고칩니다. {esc(exp)}{(' ' + esc(owner) + ' 대표가 직접 갑니다.') if owner else ''}</p>
+      <div class="hx-cta">
+        <a class="btn btn-call btn-xl" href="tel:{TEL}">{icon('phone', 26)}<span class="b-col"><small>누르면 바로 연결</small><span>{esc(B['phone'])}</span></span></a>
         <a class="btn btn-ghost-dark" href="sms:{SMS}">{icon('msg', 18)}<span>현장 사진 찍어 문자로 상담</span></a>
       </div>
-      <ul class="trust">{trust_html}</ul>
     </div>
-    <div class="hero-pics" aria-label="실제 현장 사진">
-      {hero_grid}
-      <p class="hp-note">{icon('camera', 15)} 모두 저희가 직접 작업한 실제 현장입니다</p>
+    <div class="hx-pics" aria-label="최근 다녀온 현장 사진">
+      {hero_main}
+      <div class="hx-row">{hero_row}</div>
+      <p class="hx-note">사진 위 날짜는 실제로 작업한 날입니다</p>
     </div>
   </div>
 </section>
 
-<section class="sec" id="symptoms">
+<section class="s2" id="symptoms">
   <div class="wrap">
-    <p class="eyebrow">증상별 상담</p>
-    <h2 class="h2">지금 어떤 상황인가요?</h2>
-    <p class="lead">해당하는 증상을 누르면 바로 전화로 연결됩니다.</p>
-    <div class="sym-grid">{sym_html}</div>
+    <div class="s2-head"><h2 class="h2">지금 어떤 상황인가요?</h2>
+    <p class="lead">비슷한 증상을 누르면 저희가 실제로 고친 현장을, 전화 버튼을 누르면 바로 상담으로 이어집니다.</p></div>
+    <ul class="sy-list">{sym_html}</ul>
   </div>
 </section>
 
-{principles_html()}
-
-<section class="sec sec-soft" id="equipment">
+<section class="s2 s2-soft" id="equipment">
   <div class="wrap">
-    <p class="eyebrow">짐작이 아니라 장비로</p>
-    <h2 class="h2">원인부터 정확하게 찾습니다</h2>
-    <p class="lead">원인을 모르고 뜯으면 공사가 커집니다. 상황에 맞는 장비로 새는 곳을 먼저 확인합니다.</p>
-    <div class="eq-grid">{eq_html}</div>
+    <div class="s2-head"><h2 class="h2">짐작으로 뜯지 않고, 장비로 찾습니다</h2>
+    <p class="lead">원인을 모르고 뜯으면 공사가 커집니다. 상황에 맞는 장비로 새는 곳을 먼저 확인합니다. 사진은 모두 그 장비를 실제로 쓴 현장입니다.</p></div>
+    <div class="eq2-row">{eq_html}</div>
   </div>
 </section>
 
-<section class="sec" id="cases">
+<section class="s2" id="cases">
   <div class="wrap">
-    <div class="sec-head">
-      <div><p class="eyebrow">시공 사례</p><h2 class="h2">최근 다녀온 현장</h2></div>
-      <a class="more" href="{u('case/')}">전체 {len(CASES)}건 보기 {icon('arrow', 16)}</a>
-    </div>
+    <div class="s2-head s2-split"><h2 class="h2">최근 다녀온 현장</h2><a class="more" href="{u('case/')}">현장 {len(CASES)}건 모두 보기</a></div>
     <div class="case-grid">{cases_html}</div>
+    {(f'<div class="gl"><h3 class="gl-h">부르기 전에 읽어 보세요</h3><ul class="gl-list">{guides_rows}</ul><a class="more" href="{u("guide/")}">설비 상식 {len(GUIDES)}개 모두 보기</a></div>') if GUIDES else ''}
   </div>
 </section>
-
-{guides_home()}
 {reviews_html}
-<section class="sec sec-soft">
-  <div class="wrap">
-    <p class="eyebrow">진행 과정</p>
-    <h2 class="h2">전화 한 통이면 나머지는 저희가 합니다</h2>
-    <ol class="steps">{steps_html}</ol>
+<section class="s2 s2-navy" id="principles">
+  <div class="wrap how">
+    <div class="how-who">
+      <h2 class="h2">{(esc(owner) + ' 대표가 직접 갑니다') if owner else '대표가 직접 갑니다'}</h2>
+      <p>{esc(exp)}. 모르고 뜯으면 공사가 커지기 때문에, 원인부터 찾고 필요한 만큼만 고칩니다. 한 일은 작업 전후 사진과 영상으로 그대로 보여 드립니다.</p>
+      <a class="btn btn-call" href="tel:{TEL}">{icon('phone', 18)}<span>{esc(B['phone'])}</span></a>
+    </div>
+    <ol class="st2">{steps_html}</ol>
   </div>
 </section>
 
-<section class="sec" id="area">
+<section class="s2" id="area">
   <div class="wrap area">
     <div>
-      <p class="eyebrow">출동 지역</p>
       <h2 class="h2">평택을 중심으로<br>{esc(B['region'])} 출동</h2>
       <p class="lead">{esc(' · '.join(B['areas']))}을 중심으로 출동합니다.</p>
       <ul class="chips">{area_html}</ul>
-      {('<div class="local-links">' + ''.join(f'<a class="btn btn-ghost local-link" href="{u("area/" + l["slug"] + "/")}">{esc(l["title"])} 안내 →</a>' for l in LOCALS) + '</div>') if LOCALS else ''}
+      {(f'<p class="area-links">{local_links}</p>') if LOCALS else ''}
     </div>
     <div class="faqs" id="faq">
-      <p class="eyebrow">자주 묻는 질문</p>
+      <h2 class="h3">자주 묻는 질문</h2>
       {faq_html}
     </div>
   </div>
 </section>
 
-<section class="sec">
-  <div class="wrap">{call_block('물 새는 건 기다릴수록 피해가 커집니다', f"{esc(B['hours'])} · {esc(B['region'])} 출동")}</div>
+<section class="s2 s2-last">
+  <div class="wrap">{call_block('물 새는 건 기다릴수록 피해가 커집니다', f"{esc(B['hours'])}, {esc(B['region'])} 출동")}</div>
 </section>
 '''
     title = f"{B['name']} | {' · '.join(B['areas'])} 누수탐지 · 하수구 · 배관"
@@ -534,6 +562,15 @@ def toc_html(md):
         f'<li><a href="#s{i + 1}">{inline(h)}</a></li>' for i, h in enumerate(hs)) + '</ol></nav>'
 
 
+def facts_html(c):
+    """현장 글 맨 위 한눈에 보기. frontmatter facts: "증상|원인|작업" (현장 글에 있는 사실만)."""
+    f = [x.strip() for x in str(c.get('facts', '')).split('|')]
+    if len(f) != 3 or not all(f):
+        return ''
+    rows = ''.join(f'<div><dt>{k}</dt><dd>{esc(v)}</dd></div>' for k, v in zip(('증상', '원인', '작업'), f))
+    return f'<dl class="facts">{rows}</dl>'
+
+
 def case_page(c):
     gallery = ''.join(
         f'<figure>{pic(im["src"], im.get("alt", ""), "(min-width: 760px) 720px, 100vw")}'
@@ -545,7 +582,8 @@ def case_page(c):
         video = (f'<figure class="vidbox"><div class="vwrap"><video src="{u(c["video"])}" {("poster=" + chr(34) + poster + chr(34)) if poster else ""} playsinline preload="none"></video>'
                  f'<button class="vplay" type="button" aria-label="현장 영상 재생"></button></div>'
                  f'<figcaption>{esc(c.get("video_title") or "현장 영상")} · 눌러서 재생</figcaption></figure>')
-    related = [x for x in CASES if x['slug'] != c['slug'] and x.get('service') == c.get('service')][:3]
+    same = [x for x in CASES if x['slug'] != c['slug'] and x.get('service') == c.get('service')]
+    related = ([x for x in same if x.get('area') == c.get('area')] + [x for x in same if x.get('area') != c.get('area')])[:3]
     if len(related) < 3:
         related += [x for x in CASES if x['slug'] != c['slug'] and x not in related][:3 - len(related)]
     cover = c.get('cover') or (c['images'][0]['src'] if c['images'] else '')
@@ -565,7 +603,8 @@ def case_page(c):
     <p class="case-meta big"><span class="tag">{esc(SERVICE.get(c.get('service'), ''))}</span><span>{esc(case_place(c))}</span><span>{esc(c.get('building', ''))}</span><span>{esc(case_date(c))}</span></p>
     <h1 class="h1">{esc(c['title'])}</h1>
     <p class="lead">{esc(c.get('description', ''))}</p>
-    {pic(cover, c['title'], '(min-width: 760px) 720px, 100vw', lazy=False, cls='cover', priority=True)}
+    <div class="cover-wrap">{pic(cover, c['title'], '(min-width: 760px) 720px, 100vw', lazy=False, cls='cover', priority=True)}{stamp(c)}</div>
+    {facts_html(c)}
     <div class="mini-cta"><span>같은 증상이라면 지금 바로 상담하세요</span><a class="btn btn-call" href="tel:{TEL}">{icon('phone', 18)}<span>{esc(B['phone'])}</span></a></div>
     {video}
     <div class="prose">{md_to_html(c['body'])}</div>
@@ -577,7 +616,7 @@ def case_page(c):
     {author_box()}
     {call_block('같은 증상으로 고민 중이신가요?', f"{esc(case_place(c))}을 비롯해 {esc(B['region'])} 출동")}
     {pn}
-    <h2 class="h3">다른 현장</h2>
+    <h2 class="h3">비슷한 다른 현장</h2>
     <div class="case-grid three">{''.join(case_card(x) for x in related)}</div>
   </div>
 </article>
@@ -611,13 +650,11 @@ def author_box():
     ps = (B.get('principles') or [])[:2]
     lines = ''.join(f'<li><b>{esc(p["t"])}</b><span>{esc(p["d"])}</span></li>' for p in ps)
     return f'''<aside class="author" aria-label="글쓴이">
-  <p class="au-k">NAEJIP HOME CARE</p>
-  <p class="author-n"><b class="au-gold">{esc(B['owner'])}</b> <span class="au-gold">대표</span></p>
-  <p class="au-s">{esc(B['name'])} · {esc(exp)}</p>
-  <hr class="au-hr">
+  <p class="author-n"><b>{esc(B['owner'])}</b> 대표</p>
+  <p class="au-s">{esc(B['name'])}, {esc(exp)}</p>
   <ul class="au-p">{lines}</ul>
   <p class="author-d">직접 다녀온 현장과 20년 작업 경험을 바탕으로 씁니다.</p>
-  <div class="au-foot"><a class="au-call au-gold" href="tel:{TEL}">{esc(B['phone'])}</a><span class="au-h">{esc(B['hours'])} · naezipcare.kr</span></div>
+  <a class="btn btn-call" href="tel:{TEL}">{icon('phone', 18)}<span>{esc(B['phone'])}</span></a>
 </aside>'''
 
 
