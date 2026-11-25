@@ -6,7 +6,7 @@ service: drain
 area: seoul-gangnam
 dong: 역삼동
 building: 빌라 욕실
-date: 2026-11-  # 확인 필요: 현장 날짜
+date: 2026-10-06  # 원본 사진 촬영일(EXIF)로 확인
 images:
   - src: /cases/2026-11-yeoksam-bathroom-dye-test/flood-test-floor.jpg
     alt: 서울 역삼동 빌라 욕실 바닥에 노란 색소를 탄 물을 채운 담수 테스트

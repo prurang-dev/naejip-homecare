@@ -6,7 +6,7 @@ service: leak
 area: pyeongtaek
 dong: 고덕신도시
 building: 빌라
-date: 2026-11-  # 확인 필요: 현장 날짜
+date: 2026-10-21  # 원본 사진 촬영일(EXIF)로 확인
 images:
   - src: /cases/2026-11-godeok-heating-leak/opened-floor-tee-water.jpg
     alt: 평택 고덕 빌라 바닥을 열자 드러난 난방 배관 T자 이음부와 주변에 고인 물

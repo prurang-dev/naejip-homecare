@@ -6,7 +6,7 @@ service: leak
 area: pyeongtaek
 dong: 평택
 building: 욕실
-date: 2026-11-  # 확인 필요: 현장 날짜
+date: 2026-08-28  # 원본 사진 촬영일(EXIF)로 확인
 images:
   - src: /cases/2026-11-pyeongtaek-floor-drain/drain-removed-new-drain.jpg
     alt: 평택 욕실 기존 유가를 걷어낸 자리와 교체할 새 유가, 작업 공구

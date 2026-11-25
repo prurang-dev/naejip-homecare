@@ -6,7 +6,7 @@ service: leak
 area: pyeongtaek
 dong: 팽성
 building: 아파트 욕실
-date: 2026-11-  # 확인 필요: 현장 날짜
+date: 2026-06-01  # 원본 사진 촬영일(EXIF)로 확인
 images:
   - src: /cases/2026-11-paengseong-grout/toilet-base.jpg
     alt: 평택 팽성 욕실 변기 하부 둘레 바닥 줄눈, 작업 전

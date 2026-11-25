@@ -6,7 +6,7 @@ service: leak
 area: suwon
 dong: 호매실
 building: 세탁실
-date: 2026-11-  # 확인 필요: 현장 날짜
+date: 2026-08-10  # 원본 사진 촬영일(EXIF)로 확인
 images:
   - src: /cases/2026-11-suwon-homaesil-downpipe/before-downpipe-corner.jpg
     alt: 수원 호매실 세탁실 구석의 우수관과 바닥 배수구, 작업 전 모습

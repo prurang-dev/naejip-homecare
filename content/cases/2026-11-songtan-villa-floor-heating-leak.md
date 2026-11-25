@@ -6,7 +6,7 @@ service: leak
 area: pyeongtaek
 dong: 송탄
 building: 빌라
-date: 2026-11-  # 확인 필요: 현장 날짜
+date: 2026-11-02  # 원본 사진 촬영일(EXIF)로 확인
 images:
   - src: /cases/2026-11-songtan-floor-leak/floor-wet-cracks.jpg
     alt: 평택 송탄 빌라 장판을 걷어낸 시멘트 바닥, 금이 간 틈 주변이 젖어 있는 모습

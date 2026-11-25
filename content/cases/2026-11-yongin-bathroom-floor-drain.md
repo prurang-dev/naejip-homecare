@@ -6,7 +6,7 @@ service: leak
 area: yongin
 dong: 용인
 building: 욕실
-date: 2026-11-  # 확인 필요: 현장 날짜
+date: 2026-04-01  # 원본 사진 촬영일(EXIF)로 확인
 images:
   - src: /cases/2026-11-yongin-floor-drain/bathroom-before.jpg
     alt: 용인 욕실 바닥, 기존 유가 덮개를 연 작업 전 모습

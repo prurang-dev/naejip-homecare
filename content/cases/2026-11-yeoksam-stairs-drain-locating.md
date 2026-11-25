@@ -6,7 +6,7 @@ service: drain
 area: seoul-gangnam
 dong: 역삼동
 building: 건물 계단
-date: 2026-11-  # 확인 필요: 현장 날짜
+date: 2026-10-12  # 원본 사진 촬영일(EXIF)로 확인
 images:
   - src: /cases/2026-11-yeoksam-pipe-locating/pipe-locator.jpg
     alt: 서울 역삼동 건물 계단에서 관로탐지기로 하수구 배관 위치를 추적하는 모습
