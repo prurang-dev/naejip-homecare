@@ -429,3 +429,6 @@ picture{display:contents}
 .hx-cta .btn{white-space:nowrap}
 @media (min-width:960px){.hx-cta{grid-template-columns:auto;justify-content:start}.hx-cta .btn-ghost-dark{justify-self:start}}
 @media (min-width:1100px){.hx-cta{grid-template-columns:auto auto}}
+/* 날짜 없는(3개월 지난) 도장: 작은 사진에서는 숨김 */
+.hx-s .stamp-nodate{display:none}
+@media (max-width:639px){.case-card .stamp-nodate{display:none}}

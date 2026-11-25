@@ -312,19 +312,30 @@ def call_block(title, sub):
 </div>'''
 
 
+STAMP_DAYS = 92   # 사진 위 날짜는 최근 3개월 안의 현장만(2026-11-25 길남)
+
+
 def stamp_date(c):
     parts = [x for x in str(c.get('date', '')).split('-') if x]
     if len(parts) >= 3:
+        import datetime
+        kst = datetime.timezone(datetime.timedelta(hours=9))
+        try:
+            d = datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
+        except ValueError:
+            return ''
+        if (datetime.datetime.now(kst).date() - d).days > STAMP_DAYS:
+            return ''
         return f"{int(parts[1])}.{int(parts[2]):02d}"
     if len(parts) == 2:
-        return f"{int(parts[1])}월"
+        return ''
     return ''
 
 
 def stamp(c, sub=''):
     """사진 위 현장 기록 표시: 작업한 날짜 + 동네(+ 한 줄)."""
     d = stamp_date(c)
-    return (f'<span class="stamp">{f"<b>{esc(d)}</b>" if d else ""}<span>{esc(case_place(c))}</span>'
+    return (f'<span class="stamp{"" if d else " stamp-nodate"}">{f"<b>{esc(d)}</b>" if d else ""}<span>{esc(case_place(c))}</span>'
             f'{f"<i>{esc(sub)}</i>" if sub else ""}</span>')
 
 
@@ -455,7 +466,7 @@ def home():
     <div class="hx-pics" aria-label="최근 다녀온 현장 사진">
       {hero_main}
       <div class="hx-row">{hero_row}</div>
-      <p class="hx-note">사진 위 날짜는 실제로 작업한 날입니다</p>
+      <p class="hx-note">사진 위 날짜는 실제로 작업한 날입니다(최근 3개월 현장)</p>
     </div>
   </div>
 </section>
