@@ -5,7 +5,7 @@ cover: /cases/2026-11-03-cheonan-hotwater-leak/gauge-start.jpg
 service: leak
 area: cheonan-seobuk
 dong: 불당동
-date: 2026-11-03
+date: 2026-10-30  # 원본 사진 촬영일(EXIF)로 확인
 building: 빌라 원룸
 images:
   - src: /cases/2026-11-03-cheonan-hotwater-leak/leak-test-boiler-1.jpg
