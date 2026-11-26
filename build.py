@@ -675,7 +675,7 @@ def author_box(call=True):
     ps = (B.get('principles') or [])[:2]
     lines = ''.join(f'<li><b>{esc(p["t"])}</b><span>{esc(p["d"])}</span></li>' for p in ps)
     return f'''<aside class="author" aria-label="글쓴이">
-  <p class="author-n"><b>{esc(B['owner'])}</b> 대표</p>
+  <p class="author-n">대표 <b>{esc(B['owner'])}</b></p>
   <p class="au-s">{esc(B['name'])}, {esc(exp)}</p>
   <ul class="au-p">{lines}</ul>
   <p class="author-d">직접 다녀온 현장과 20년 작업 경험을 바탕으로 씁니다.</p>
@@ -794,7 +794,7 @@ def guide_page(g):
     <nav class="crumb" aria-label="위치"><a href="{u('')}">홈</a> / <a href="{u('guide/')}">설비 상식</a></nav>
     <p class="case-meta big"><span class="tag">{esc(GUIDE_CAT.get(g.get('category'), '설비 상식'))}</span></p>
     <h1 class="h1">{esc(g['title'])}</h1>
-    <p class="byline">글 {esc(B['owner'])} 대표 · 설비 {esc(str(B.get('experience_years') or 20))}년 · {esc(g.get('updated') or g.get('date', ''))} · 약 {max(2, round(len(re.sub(r'!?\[[^\]]*\]\([^)]*\)', '', g['body'])) / 600))}분</p>
+    <p class="byline">글 대표 {esc(B['owner'])} · 설비 {esc(str(B.get('experience_years') or 20))}년 · {esc(g.get('updated') or g.get('date', ''))} · 약 {max(2, round(len(re.sub(r'!?\[[^\]]*\]\([^)]*\)', '', g['body'])) / 600))}분</p>
     <div class="answer"><p class="answer-t">먼저 결론</p><p>{esc(g.get('description', ''))}</p></div>
     {cover_html}
     {toc_html(g['body'])}
