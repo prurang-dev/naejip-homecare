@@ -235,7 +235,7 @@ def page(title, desc, path, body, og_image=None):
 <script type="application/ld+json">{ld_business()}</script>
 {ld_website() if path == '' else ''}
 </head>
-<body>
+<body{' class="reading"' if path.startswith('guide/') and path != 'guide/' else ''}>
 <a class="skip" href="#main">본문으로 건너뛰기</a>
 <header class="top">
   <div class="wrap top-in">
@@ -272,6 +272,7 @@ lb.querySelector('.lb-x').onclick=hide;lb.querySelector('.lb-p').onclick=functio
 lb.addEventListener('click',function(e){{if(e.target===lb)hide()}});document.addEventListener('keydown',function(e){{if(lb.hidden)return;if(e.key==='Escape')hide();if(e.key==='ArrowLeft')show(k-1);if(e.key==='ArrowRight')show(k+1)}});
 var sx=0;lb.addEventListener('touchstart',function(e){{sx=e.touches[0].clientX}},{{passive:true}});lb.addEventListener('touchend',function(e){{var d=e.changedTouches[0].clientX-sx;if(Math.abs(d)>40)show(k+(d<0?1:-1))}});
 document.querySelectorAll('.vwrap').forEach(function(w){{var v=w.querySelector('video'),b=w.querySelector('.vplay');b.addEventListener('click',function(){{b.hidden=true;v.controls=true;v.play();if(window.gtag)gtag('event','video_play',{{page_path:location.pathname}})}});v.addEventListener('play',function(){{b.hidden=true}})}});
+if(document.body.classList.contains('reading')){{var ly=0,dk=document.querySelector('.dock');if(dk)window.addEventListener('scroll',function(){{var y=scrollY,h=document.documentElement;var nearEnd=y+innerHeight>h.scrollHeight-900;dk.classList.toggle('dock-hide',y>ly&&y>200&&!nearEnd);ly=y}},{{passive:true}})}}
 var rb=document.querySelector('.readbar i');if(rb)window.addEventListener('scroll',function(){{var h=document.documentElement;rb.style.width=Math.min(100,h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'}},{{passive:true}});
 document.querySelectorAll('.selfcheck').forEach(function(b){{var n=+b.dataset.n,r=b.querySelector('.sc-r'),c=b.querySelector('.sc-cta');b.addEventListener('change',function(){{var m=b.querySelectorAll('input:checked').length;
 r.textContent=m===0?'해당하는 항목을 눌러 보세요.':(m>=n?m+'개 해당 — 점검이 필요한 상태일 수 있어요. 사진을 문자로 보내 주시면 먼저 봐 드립니다.':m+'개 해당 — 아래 내용을 읽어 보시고, 증상이 계속되면 상담하세요.');c.hidden=m<n;if(m===n&&window.gtag)gtag('event','selfcheck_done',{{page_path:location.pathname}})}})}});
@@ -457,7 +458,7 @@ def home():
     <div class="hx-text">
       <p class="live"><span class="dot" aria-hidden="true"></span>{esc(B['hours'])}, {esc(B['region'])} 출동</p>
       <h1>물이 새거나 막혔나요?<br>지금 전화 주세요.</h1>
-      <p class="hx-sub">장비로 원인부터 찾고, 필요한 곳만 고칩니다. {esc(exp)}{(' ' + esc(owner) + ' 대표가 직접 갑니다.') if owner else ''}</p>
+      <p class="hx-sub">장비로 원인부터 찾고, 필요한 곳만 고칩니다. {esc(exp)}, 대표가 직접 갑니다.</p>
       <div class="hx-cta">
         <a class="btn btn-call btn-xl" href="tel:{TEL}">{icon('phone', 26)}<span class="b-col"><small>누르면 바로 연결</small><span>{esc(B['phone'])}</span></span></a>
         <a class="btn btn-ghost-dark" href="sms:{SMS}">{icon('msg', 18)}<span>현장 사진 찍어 문자로 상담</span></a>
@@ -498,7 +499,7 @@ def home():
 <section class="s2 s2-navy" id="principles">
   <div class="wrap how">
     <div class="how-who">
-      <h2 class="h2">{(esc(owner) + ' 대표가 직접 갑니다') if owner else '대표가 직접 갑니다'}</h2>
+      <h2 class="h2">대표가 직접 갑니다</h2>
       <p>{esc(exp)}. 모르고 뜯으면 공사가 커지기 때문에, 원인부터 찾고 필요한 만큼만 고칩니다. 한 일은 작업 전후 사진과 영상으로 그대로 보여 드립니다.</p>
       <a class="btn btn-call" href="tel:{TEL}">{icon('phone', 18)}<span>{esc(B['phone'])}</span></a>
     </div>
@@ -569,8 +570,8 @@ def toc_html(md):
     hs = [l[3:].strip() for l in md.split('\n') if l.startswith('## ')]
     if len(hs) < 3:
         return ''
-    return '<nav class="toc" aria-label="목차"><p class="toc-t">이 글의 순서</p><ol>' + ''.join(
-        f'<li><a href="#s{i + 1}">{inline(h)}</a></li>' for i, h in enumerate(hs)) + '</ol></nav>'
+    return '<nav class="toc" aria-label="목차"><details><summary class="toc-t">이 글의 순서 <span>(' + str(len(hs)) + ')</span></summary><ol>' + ''.join(
+        f'<li><a href="#s{i + 1}">{inline(h)}</a></li>' for i, h in enumerate(hs)) + '</ol></details></nav>'
 
 
 def facts_html(c):
@@ -654,7 +655,7 @@ def principles_html():
 </section>'''
 
 
-def author_box():
+def author_box(call=True):
     if B['owner'].startswith('['):
         return ''
     exp = B.get('experience_label') or (f"설비 경력 {B['experience_years']}년" if B.get('experience_years') else '')
@@ -665,7 +666,7 @@ def author_box():
   <p class="au-s">{esc(B['name'])}, {esc(exp)}</p>
   <ul class="au-p">{lines}</ul>
   <p class="author-d">직접 다녀온 현장과 20년 작업 경험을 바탕으로 씁니다.</p>
-  <a class="btn btn-call" href="tel:{TEL}">{icon('phone', 18)}<span>{esc(B['phone'])}</span></a>
+  {f'<a class="btn btn-call" href="tel:{TEL}">{icon("phone", 18)}<span>{esc(B["phone"])}</span></a>' if call else ''}
 </aside>'''
 
 
@@ -778,14 +779,16 @@ def guide_page(g):
 <article class="sec page-head">
   <div class="wrap narrow">
     <nav class="crumb" aria-label="위치"><a href="{u('')}">홈</a> / <a href="{u('guide/')}">설비 상식</a></nav>
-    <p class="case-meta big"><span class="tag">{esc(GUIDE_CAT.get(g.get('category'), '설비 상식'))}</span><span>{esc(g.get('date', ''))}</span></p>
+    <p class="case-meta big"><span class="tag">{esc(GUIDE_CAT.get(g.get('category'), '설비 상식'))}</span></p>
     <h1 class="h1">{esc(g['title'])}</h1>
-    <p class="lead">{esc(g.get('description', ''))}</p>
+    <p class="byline">글 {esc(B['owner'])} 대표 · 설비 {esc(str(B.get('experience_years') or 20))}년 · {esc(g.get('updated') or g.get('date', ''))} · 약 {max(2, round(len(re.sub(r'!?\[[^\]]*\]\([^)]*\)', '', g['body'])) / 600))}분</p>
+    <div class="answer"><p class="answer-t">먼저 결론</p><p>{esc(g.get('description', ''))}</p></div>
     {cover_html}
     {toc_html(g['body'])}
-    {selfcheck_html(g)}
+    {'<p class="sc-jump"><a href="#selfcheck">↓ 우리 집도 해당될까? 30초 자가진단</a></p>' if g.get('selfcheck') else ''}
     <div class="prose">{md_to_html(g['body'])}</div>
-    {author_box()}
+    <div id="selfcheck">{selfcheck_html(g)}</div>
+    {author_box(call=False)}
     {call_block('혼자 해결이 어렵다면 전화 주세요', f"{esc(B['hours'])} · {esc(B['region'])} 출동")}
     {cases_html}
     {other_html}

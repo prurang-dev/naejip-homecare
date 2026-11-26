@@ -432,3 +432,25 @@ picture{display:contents}
 /* 날짜 없는(3개월 지난) 도장: 작은 사진에서는 숨김 */
 .hx-s .stamp-nodate{display:none}
 @media (max-width:639px){.case-card .stamp-nodate{display:none}}
+/* 정보글 읽기 모드 (2026-11-26) */
+.byline{margin:6px 0 0;color:#5B6B80;font-size:.92rem}
+.answer{margin:18px 0 8px;padding:16px 18px;border-left:4px solid var(--call,#E2510C);background:#F7F9FC;border-radius:0 12px 12px 0}
+.answer-t{margin:0 0 4px;font-weight:800;color:#0B1F3A;font-size:.95rem}.answer p:last-child{margin:0;font-size:1.02rem;line-height:1.7;color:#1F2B3D}
+.toc details>summary{cursor:pointer;list-style:none}.toc details>summary::-webkit-details-marker{display:none}
+.toc details>summary::after{content:' ▾';color:#5B6B80}.toc details[open]>summary::after{content:' ▴'}
+.toc summary span{color:#5B6B80;font-weight:600}
+.sc-jump{margin:6px 0 18px;font-size:.95rem}.sc-jump a{color:var(--brand,#1B4F9C);font-weight:700;text-decoration:none}
+#selfcheck{scroll-margin-top:80px;margin-top:28px}
+.sc-cta[hidden]{display:none!important}
+.reading .dock{transition:transform .25s ease}.reading .dock.dock-hide{transform:translateY(110%)}
+.reading .dock a{min-height:48px}
+.prose .fig img{cursor:zoom-in}
+/* 본문 간격 (2026-11-26): 문단 사이를 줄 사이보다 확실히 넓게 */
+.prose{line-height:1.75}
+.prose p{margin:0 0 22px}
+.prose ul,.prose ol{margin:0 0 22px}
+.prose li{margin:0 0 8px}
+.prose li:last-child{margin-bottom:0}
+.prose h2{margin:44px 0 12px;line-height:1.35}
+.prose h3{margin:28px 0 8px;font-size:18px;line-height:1.4;color:var(--navy)}
+.prose p>strong:only-child{display:block;margin-top:24px;font-size:18px}
