@@ -276,9 +276,9 @@ def page(title, desc, path, body, og_image=None):
         <a href="{u('')}#symptoms">증상별 상담</a>
         <a href="{u('')}#principles">현장 원칙</a>
         <a href="{u('')}#equipment">탐지 장비</a>
-        <a href="{u('case/')}">시공 사례</a>
-        {guide_nav}
-        {area_nav}
+        <a href="{u('case/')}">시공 사례<span class="mnav-n">{len(CASES)}</span></a>
+        {guide_nav.replace('</a>', f'<span class="mnav-n">{len(GUIDES)}</span></a>')}
+        {area_nav.replace('</a>', f'<span class="mnav-n">{len(LOCALS)}</span></a>')}
         <a href="{u('')}#area">출동 지역</a>
         <a href="{u('')}#faq">자주 묻는 질문</a>
       </nav>
