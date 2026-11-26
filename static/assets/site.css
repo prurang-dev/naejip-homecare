@@ -454,3 +454,71 @@ picture{display:contents}
 .prose h2{margin:44px 0 12px;line-height:1.35}
 .prose h3{margin:28px 0 8px;font-size:18px;line-height:1.4;color:var(--navy)}
 .prose p>strong:only-child{display:block;margin-top:24px;font-size:18px}
+
+/* ── 연락 버튼 다듬기 (2026-11-26) ─────────────────────────────
+   전화 = 주황 하나만 강하게. 아이콘은 흰 원 안에, 번호는 고정폭 숫자.
+   카톡 = 사람들이 아는 노란색, 문자 = 테두리만. 하늘색 보조 버튼은 쓰지 않는다. */
+.btn{border-radius:16px}
+.btn:focus-visible,.dock a:focus-visible,.top-call:focus-visible{outline:3px solid #FFB98F;outline-offset:3px}
+.btn-call{box-shadow:none;justify-content:flex-start;gap:14px;padding:0 20px 0 12px}
+.btn-call>svg{box-sizing:content-box;flex:none;padding:9px;border-radius:50%;background:#fff;color:var(--call)}
+.btn-call .b-col small{font-size:12.5px;font-weight:700;opacity:.88;letter-spacing:0}
+.btn-xl{min-height:76px;font-size:28px;padding:0 24px 0 12px}
+.btn-xl>svg{padding:11px}
+.btn-lg{min-height:68px;font-size:24px}
+.btn-lg .b-col,.btn-xl .b-col{gap:2px}
+.alt-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.alt-row .btn{min-height:54px;font-size:15px;padding:0 10px;gap:8px;white-space:nowrap}
+.btn-kakao{background:#FEE500;color:#191600}
+.btn-kakao:hover{background:#F4DC00;color:#191600}
+.btn-line{background:#fff;color:var(--navy);border:1.5px solid #C6D0DD}
+.btn-line:hover{border-color:var(--navy);color:var(--navy)}
+.btn-line-dark{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.34)}
+.btn-line-dark:hover{border-color:#fff;color:#fff}
+.hx-cta,.cta-actions{grid-template-columns:1fr!important}
+.cta .alt-row .btn-line-dark{border-color:rgba(255,255,255,.3)}
+/* 첫 화면 전화 버튼: 링 한 번만 (움직임 줄이기 설정이면 없음) */
+@media (prefers-reduced-motion:no-preference){
+  .hx-cta .btn-call>svg{animation:ring 1.6s ease-out .6s 2}
+  @keyframes ring{0%{box-shadow:0 0 0 0 rgba(255,255,255,.55)}100%{box-shadow:0 0 0 14px rgba(255,255,255,0)}}
+}
+/* 하단 고정 바 */
+.dock{grid-template-columns:1fr 64px 64px;gap:6px;padding-top:8px}
+.dock a{min-height:58px;border-radius:14px}
+.dock-call{justify-content:flex-start!important;gap:10px!important;padding:0 12px 0 8px;font-size:15px}
+.dock-call>svg{box-sizing:content-box;flex:none;padding:8px;border-radius:50%;background:#fff;color:var(--call)}
+.dock-call .b-col{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15}
+.dock-call .b-col small{font-size:11.5px;font-weight:700;opacity:.88}
+.dock-call .b-col b{font-size:19px;letter-spacing:-.01em}
+.dock-kakao,.dock-sms{flex-direction:column;gap:2px!important;font-size:12px;font-weight:800}
+.dock-kakao{background:#FEE500;color:#191600}
+.dock-sms{background:#fff!important;color:var(--navy)!important;border:1.5px solid #C6D0DD}
+@media (min-width:420px){.dock{grid-template-columns:1fr 76px 76px}}
+@media (min-width:700px){
+  .hx-cta{grid-template-columns:minmax(0,440px)!important}
+  .cta-actions{min-width:360px}
+}
+
+/* ── 영어 페이지 (2026-11-26) ── */
+.lang-sw{margin-left:auto;margin-right:8px;display:inline-flex;align-items:center;white-space:nowrap;min-height:44px;padding:0 10px;border-radius:12px;border:1.5px solid var(--line);color:var(--navy);font-weight:700;font-size:14px;text-decoration:none}
+.en .top-call{margin-left:0}
+.en-hero{padding-top:6px;max-width:620px}
+.en-pic{margin:0}.en-pic figcaption{margin-top:8px;font-size:13px;color:#9FB0C8}
+.en-hero h1{font-size:34px}
+.btn-en-main{min-height:74px;justify-content:flex-start;gap:14px;padding:0 20px 0 12px;font-size:21px}
+.btn-en-main>svg{box-sizing:content-box;flex:none;padding:10px;border-radius:50%;background:#191600;color:#FEE500}
+.btn-en-main .b-col small{font-size:12.5px;font-weight:700;opacity:.75}
+.en-lang{margin-top:14px;font-size:14.5px;color:#C9D6EA;line-height:1.6;max-width:560px}
+.en-svcs{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:12px}
+.en-svc{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;padding:18px;border:1px solid var(--line);border-radius:16px}
+.en-svc>svg{color:var(--call);margin-top:2px}
+.en-svc h3{margin:0;font-size:18px;color:var(--navy)}
+.en-svc p{margin:4px 0 0;color:var(--sub);font-size:15.5px}
+.en-steps{margin:22px 0 0;padding:0;list-style:none;counter-reset:st;display:grid;gap:14px}
+.en-steps li{counter-increment:st;display:grid;grid-template-columns:40px 1fr;column-gap:14px}
+.en-steps li::before{content:counter(st);grid-row:span 2;width:40px;height:40px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
+.en-steps b{color:var(--navy);font-size:17px}
+.en-steps span{color:var(--sub);font-size:15.5px}
+.en-cta{margin-top:26px}
+@media (min-width:760px){.en-svcs{grid-template-columns:1fr 1fr}}
+@media (min-width:960px){.lang-sw{margin-left:12px;margin-right:0}.en .lang-sw{margin-left:auto}.en-hero h1{font-size:44px}}

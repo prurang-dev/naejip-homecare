@@ -23,6 +23,7 @@ TEL = re.sub(r'[^0-9]', '', B['phone'])
 import hashlib
 CSS_VER = hashlib.md5(open(os.path.join(ROOT, 'static/assets/site.css'), 'rb').read()).hexdigest()[:8]
 SMS = re.sub(r'[^0-9]', '', B['sms'])
+KAKAO = B.get('kakao', '')
 
 SERVICE = {'leak': '누수 탐지·공사', 'drain': '하수구·배관', 'inspect': '배관 점검'}
 AREA = {'pyeongtaek': '평택', 'cheonan': '천안', 'cheonan-seobuk': '천안', 'suwon': '수원',
@@ -155,6 +156,7 @@ def icon(name, size=22):
     paths = {
         'phone': '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>',
         'msg': '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+        'talk': '<path fill="currentColor" stroke="none" d="M12 3.5c-5 0-9 3.2-9 7.1 0 2.5 1.6 4.7 4.1 5.9l-.9 3.4c-.1.3.3.6.6.4l4-2.7c.4 0 .8.1 1.2.1 5 0 9-3.2 9-7.1S17 3.5 12 3.5z"/>',
         'check': '<path d="M20 6 9 17l-5-5"/>',
         'arrow': '<path d="M5 12h14M13 6l6 6-6 6"/>',
         'pin': '<path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -216,6 +218,7 @@ def page(title, desc, path, body, og_image=None):
 <meta name="description" content="{esc(desc)}">
 <meta name="robots" content="{robots}">
 {canon}
+{(f'<link rel="alternate" hreflang="ko" href="{esc(SITE_URL + u(""))}"><link rel="alternate" hreflang="en" href="{esc(SITE_URL + u("en/"))}"><link rel="alternate" hreflang="x-default" href="{esc(SITE_URL + u(""))}">') if SITE_URL and path == '' else ''}
 <meta property="og:type" content="website">
 <meta property="og:title" content="{esc(title)}">
 <meta property="og:description" content="{esc(desc)}">
@@ -231,7 +234,7 @@ def page(title, desc, path, body, og_image=None):
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"></noscript>
 <link rel="stylesheet" href="{u('assets/site.css')}?v={CSS_VER}">
-{(f'<script async src="https://www.googletagmanager.com/gtag/js?id={B["ga4_id"]}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments)}}gtag("js",new Date());gtag("config","{B["ga4_id"]}");document.addEventListener("click",function(e){{var a=e.target.closest&&e.target.closest("a[href^=\'tel:\'],a[href^=\'sms:\']");if(a){{gtag("event",a.href.indexOf("tel:")===0?"phone_click":"sms_click",{{link_location:(a.className||"link"),page_path:location.pathname}});}}}});</script>') if B.get('ga4_id') and INDEX else ''}
+{(f'<script async src="https://www.googletagmanager.com/gtag/js?id={B["ga4_id"]}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments)}}gtag("js",new Date());gtag("config","{B["ga4_id"]}");document.addEventListener("click",function(e){{var a=e.target.closest&&e.target.closest("a[href^=\'tel:\'],a[href^=\'sms:\'],a[href*=\'open.kakao.com\']");if(a){{gtag("event",a.href.indexOf("tel:")===0?"phone_click":(a.href.indexOf("kakao")>0?"kakao_click":"sms_click"),{{link_location:(a.className||"link"),page_path:location.pathname}});}}}});</script>') if B.get('ga4_id') and INDEX else ''}
 <script type="application/ld+json">{ld_business()}</script>
 {ld_website() if path == '' else ''}
 </head>
@@ -246,6 +249,7 @@ def page(title, desc, path, body, og_image=None):
       <a href="{u('case/')}">시공 사례</a>
       {guide_nav}
       {area_nav}
+      <a href="{u('en/')}" hreflang="en" lang="en">English</a>
     </nav>
     <a class="top-call" href="tel:{TEL}" aria-label="전화 상담 {esc(B['phone'])}">{icon('phone', 18)}<span>{esc(B['phone'])}</span></a>
     <details class="mnav">
@@ -259,6 +263,7 @@ def page(title, desc, path, body, og_image=None):
         {area_nav}
         <a href="{u('')}#area">출동 지역</a>
         <a href="{u('')}#faq">자주 묻는 질문</a>
+        <a href="{u('en/')}" hreflang="en" lang="en">English</a>
       </nav>
     </details>
   </div>
@@ -292,12 +297,20 @@ r.textContent=m===0?'해당하는 항목을 눌러 보세요.':(m>=n?m+'개 해�
   </div>
 </footer>
 <div class="dock" role="region" aria-label="빠른 연락">
-  <a class="dock-call" href="tel:{TEL}">{icon('phone', 20)}<span>전화 상담</span><b>{esc(B['phone'])}</b></a>
-  <a class="dock-sms" href="sms:{SMS}">{icon('msg', 20)}<span>사진 문자</span></a>
+  <a class="dock-call" href="tel:{TEL}">{icon('phone', 20)}<span class="b-col"><small>24시간 전화</small><b>{esc(B['phone'])}</b></span></a>
+  {('<a class="dock-kakao" href="' + esc(KAKAO) + '" target="_blank" rel="noopener">' + icon('talk', 22) + '<span>카톡</span></a>') if KAKAO else ''}
+  <a class="dock-sms" href="sms:{SMS}">{icon('camera', 21)}<span>문자</span></a>
 </div>
 </body>
 </html>
 '''
+
+
+def alt_contacts(dark=False):
+    """카톡 상담 + 사진 문자 (전화 버튼 아래 보조 줄)"""
+    k = (f'<a class="btn btn-kakao" href="{esc(KAKAO)}" target="_blank" rel="noopener">{icon("talk", 20)}<span>카카오톡 상담</span></a>') if KAKAO else ''
+    m = f'<a class="btn {"btn-line-dark" if dark else "btn-line"}" href="sms:{SMS}">{icon("camera", 19)}<span>사진 문자 보내기</span></a>'
+    return f'<div class="alt-row">{k}{m}</div>'
 
 
 def call_block(title, sub):
@@ -307,8 +320,8 @@ def call_block(title, sub):
     <p class="cta-sub">{sub}</p>
   </div>
   <div class="cta-actions">
-    <a class="btn btn-call btn-lg" href="tel:{TEL}">{icon('phone', 22)}<span>{esc(B['phone'])}</span></a>
-    <a class="btn btn-ghost" href="sms:{SMS}">{icon('msg', 18)}<span>사진 찍어 문자 보내기</span></a>
+    <a class="btn btn-call btn-lg" href="tel:{TEL}">{icon('phone', 22)}<span class="b-col"><small>24시간 전화 상담</small><span>{esc(B['phone'])}</span></span></a>
+    {alt_contacts(True)}
   </div>
 </div>'''
 
@@ -460,8 +473,8 @@ def home():
       <h1>물이 새거나 막혔나요?<br>지금 전화 주세요.</h1>
       <p class="hx-sub">장비로 원인부터 찾고, 필요한 곳만 고칩니다. {esc(exp)}, 대표가 직접 갑니다.</p>
       <div class="hx-cta">
-        <a class="btn btn-call btn-xl" href="tel:{TEL}">{icon('phone', 26)}<span class="b-col"><small>누르면 바로 연결</small><span>{esc(B['phone'])}</span></span></a>
-        <a class="btn btn-ghost-dark" href="sms:{SMS}">{icon('msg', 18)}<span>현장 사진 찍어 문자로 상담</span></a>
+        <a class="btn btn-call btn-xl" href="tel:{TEL}">{icon('phone', 26)}<span class="b-col"><small>24시간 전화 상담 · 누르면 바로 연결</small><span>{esc(B['phone'])}</span></span></a>
+        {alt_contacts(True)}
       </div>
     </div>
     <div class="hx-pics" aria-label="최근 다녀온 현장 사진">
@@ -905,6 +918,158 @@ def area_list():
     return page(f"지역 안내 | {B['name']}", f"평택 누수탐지, 평택 하수구막힘 등 지역별 실제 현장과 해결 방법 안내. {B['region']} 출동, 24시간 상담 {B['phone']}.", 'area/', body)
 
 
+# ---------------- English page (2026-11-26 길남: 평택·오산 거주 외국인·미군 가족 문의 시험) ----------------
+EN_CASES = [
+    ('2026-11-songtan-villa-floor-heating-leak', 'Songtan, Pyeongtaek · Villa',
+     'Water coming up under the vinyl floor. We traced the leaking floor-heating pipe with hydrogen tracer gas, replaced it and restored the floor.'),
+    ('2026-11-godeok-villa-heating-leak', 'Godeok, Pyeongtaek · Villa',
+     'Water dripping into the unit below. We located the leaking heating pipe under the floor and repaired it.'),
+    ('2026-11-pyeongtaek-poseung-school-sump-jetting', 'Poseung, Pyeongtaek · School',
+     'Main drain line from the sump was blocked. Cleared it with high-pressure jetting and descaled the pipe.'),
+]
+
+
+def en_hero_pic():
+    c = BY_SLUG.get('2026-10-godeok-villa-heating-thermal-check')
+    if not c:
+        return ''
+    cover = c.get('cover') or (c['images'][0]['src'] if c['images'] else '')
+    return (f'<figure class="en-pic"><span class="hx-main">{pic(cover, "Thermal camera image of floor-heating pipes in a Pyeongtaek villa", "(min-width: 960px) 520px, 100vw", lazy=False, priority=True)}</span>'
+            '<figcaption>Thermal camera check of floor-heating pipes, Godeok, Pyeongtaek. No floor removed.</figcaption></figure>')
+
+
+def en_home():
+    canonical = SITE_URL + u('en/') if SITE_URL else ''
+    kakao_btn = (f'<a class="btn btn-kakao btn-en-main" href="{esc(KAKAO)}" target="_blank" rel="noopener">{icon("talk", 22)}<span class="b-col"><small>Fastest for English</small><span>Message us on KakaoTalk</span></span></a>') if KAKAO else ''
+    cards = []
+    for slug, where, what in EN_CASES:
+        c = BY_SLUG.get(slug)
+        if not c:
+            continue
+        cover = c.get('cover') or (c['images'][0]['src'] if c['images'] else '')
+        cards.append(f'''<a class="case-card" href="{u('case/' + slug + '/')}" hreflang="ko">
+  <span class="case-img">{pic(cover, what, '(min-width: 1000px) 360px, (min-width: 640px) 50vw, 100vw')}</span>
+  <span class="case-meta"><span>{esc(where)}</span></span>
+  <span class="case-title">{esc(what)}</span>
+</a>''')
+    services = [
+        ('drop', 'Leak detection', 'Pressure tests, hydrogen tracer gas and a thermal camera find the leak first, so we open only a small spot instead of tearing up the floor.'),
+        ('floor', 'Floor heating & boiler pipes', 'Water under the floor, a boiler that keeps asking for water, or a leak into the apartment below.'),
+        ('drain', 'Clogged drains & toilets', 'Sinks, toilets, floor drains and main sewer lines, including high-pressure jetting.'),
+        ('toilet', 'Bathroom & pipe repair', 'Floor-drain replacement, grout and waterproofing around drains, pipe replacement.'),
+    ]
+    svc = ''.join(f'<li class="en-svc">{icon(i, 26)}<div><h3>{esc(t)}</h3><p>{esc(d)}</p></div></li>' for i, t, d in services)
+    steps = [
+        ('Send photos and your area', 'On KakaoTalk or by text. A photo of the leak or drain and the town you live in is enough to start.'),
+        ('We explain what we think it is', 'Before any work, we tell you the likely cause and what the job involves.'),
+        ('We find it with equipment and fix only what is needed', 'No guesswork demolition.'),
+        ('You get before-and-after photos', 'So you, your landlord or housing office can see exactly what was done.'),
+    ]
+    st = ''.join(f'<li><b>{esc(a)}</b><span>{esc(b)}</span></li>' for a, b in steps)
+    areas = 'Pyeongtaek (Songtan, Godeok, Paengseong), Osan, Suwon, Dongtan, Hwaseong, Yongin, Cheonan, Seoul and the rest of Gyeonggi-do'
+    ld = {'@context': 'https://schema.org', '@type': 'Plumber', 'name': B.get('name_en') or B['name'], 'alternateName': B['name'],
+          'telephone': B['phone'], 'url': canonical, 'inLanguage': 'en', 'openingHours': 'Mo-Su 00:00-23:59',
+          'areaServed': ['Pyeongtaek', 'Osan', 'Suwon', 'Dongtan', 'Hwaseong', 'Yongin', 'Cheonan', 'Seoul', 'Gyeonggi-do'],
+          'knowsLanguage': ['ko', 'en']}
+    name_en = esc(B.get('name_en') or B['name'])
+    return f'''<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Plumber &amp; Leak Detection in Pyeongtaek and Osan | {name_en}</title>
+<meta name="description" content="Leak detection, clogged drains, floor-heating and pipe repair in Pyeongtaek, Osan and across Gyeonggi, including homes near Camp Humphreys and Osan Air Base. Message us in English on KakaoTalk or by text.">
+<meta name="robots" content="{'index,follow' if INDEX else 'noindex,nofollow'}">
+{f'<link rel="canonical" href="{esc(canonical)}">' if canonical else ''}
+{f'<link rel="alternate" hreflang="en" href="{esc(canonical)}"><link rel="alternate" hreflang="ko" href="{esc(SITE_URL + u(""))}"><link rel="alternate" hreflang="x-default" href="{esc(SITE_URL + u(""))}">' if SITE_URL else ''}
+<meta property="og:type" content="website">
+<meta property="og:title" content="Plumber &amp; Leak Detection in Pyeongtaek and Osan | {name_en}">
+<meta property="og:description" content="Leak detection, clogged drains and pipe repair in Pyeongtaek, Osan and Gyeonggi. Message us in English.">
+<meta property="og:image" content="{esc((SITE_URL or '') + u('og/default.jpg'))}"><meta property="og:url" content="{esc(canonical)}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0B1F3A">
+<link rel="icon" href="{u('favicon.svg')}" type="image/svg+xml">
+<link rel="apple-touch-icon" href="{u('apple-touch-icon.png')}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="{u('assets/site.css')}?v={CSS_VER}">
+{(f'<script async src="https://www.googletagmanager.com/gtag/js?id={B["ga4_id"]}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments)}}gtag("js",new Date());gtag("config","{B["ga4_id"]}");document.addEventListener("click",function(e){{var a=e.target.closest&&e.target.closest("a[href^=\'tel:\'],a[href^=\'sms:\'],a[href*=\'open.kakao.com\']");if(a){{gtag("event",a.href.indexOf("tel:")===0?"phone_click":(a.href.indexOf("kakao")>0?"kakao_click":"sms_click"),{{link_location:(a.className||"link"),page_path:location.pathname,lang:"en"}});}}}});</script>') if B.get('ga4_id') and INDEX else ''}
+<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
+</head>
+<body class="en">
+<header class="top">
+  <div class="wrap top-in">
+    <a class="logo" href="{u('en/')}"><img class="logo-mark" src="{u('logo.svg')}" alt="" width="40" height="40"><span class="logo-text">{name_en}<span>Leak detection · Drains · Pipes</span></span></a>
+    <a class="lang-sw" href="{u('')}" hreflang="ko" lang="ko">한국어</a>
+    <a class="top-call" href="tel:{TEL}" aria-label="Call {esc(B['phone'])}">{icon('phone', 18)}<span>{esc(B['phone'])}</span></a>
+  </div>
+</header>
+<main id="main">
+<section class="hx">
+  <div class="wrap hx-in">
+  <div class="en-hero">
+    <p class="live"><span class="dot" aria-hidden="true"></span>Pyeongtaek, Osan and all of Gyeonggi, 24/7</p>
+    <h1>Leak or clogged drain? We find the cause and fix it.</h1>
+    <p class="hx-sub">A local plumbing team based in Pyeongtaek with 20+ years in the trade. We work in homes and businesses across Pyeongtaek and Osan, including off-post housing near Camp Humphreys and Osan Air Base.</p>
+    <div class="hx-cta">
+      {kakao_btn}
+      <div class="alt-row"><a class="btn btn-line-dark" href="sms:{SMS}">{icon("camera", 19)}<span>Text us photos</span></a><a class="btn btn-line-dark" href="tel:{TEL}">{icon("phone", 18)}<span>Call (Korean)</span></a></div>
+    </div>
+    <p class="en-lang">Our team speaks Korean. Write to us in English on KakaoTalk or by text and we will reply in English using a translator. Phone calls are in Korean.</p>
+  </div>
+  {en_hero_pic()}
+  </div>
+</section>
+
+<section class="s2">
+  <div class="wrap">
+    <h2 class="h2">What we do</h2>
+    <ul class="en-svcs">{svc}</ul>
+  </div>
+</section>
+
+<section class="s2 s2-soft">
+  <div class="wrap">
+    <h2 class="h2">How it works</h2>
+    <ol class="en-steps">{st}</ol>
+  </div>
+</section>
+
+<section class="s2">
+  <div class="wrap">
+    <h2 class="h2">Recent jobs</h2>
+    <p class="lead">Real jobs from the last few weeks. Full write-ups are in Korean.</p>
+    <div class="case-grid">{''.join(cards)}</div>
+  </div>
+</section>
+
+<section class="s2 s2-soft">
+  <div class="wrap">
+    <h2 class="h2">Where we go</h2>
+    <p class="lead">{esc(areas)}.</p>
+    <div class="cta en-cta">
+      <div><p class="cta-title">Send a photo, get an answer</p><p class="cta-sub">KakaoTalk or text, in English. We reply as soon as we can, day or night.</p></div>
+      <div class="cta-actions">{kakao_btn}<div class="alt-row"><a class="btn btn-line-dark" href="sms:{SMS}">{icon("camera", 19)}<span>Text us photos</span></a><a class="btn btn-line-dark" href="tel:{TEL}">{icon("phone", 18)}<span>Call (Korean)</span></a></div></div>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="foot">
+  <div class="wrap">
+    <p class="foot-name"><img src="{u('logo.svg')}" alt="" width="28" height="28">{name_en} ({esc(B['name'])})</p>
+    <p>Business registration no. {esc(B['biz_no'])} · Phone <a href="tel:{TEL}">{esc(B['phone'])}</a></p>
+    <p><a href="{u('')}" hreflang="ko" lang="ko">한국어 사이트</a></p>
+  </div>
+</footer>
+<div class="dock" role="region" aria-label="Contact">
+  <a class="dock-call" href="tel:{TEL}">{icon('phone', 20)}<span class="b-col"><small>Call (Korean)</small><b>{esc(B['phone'])}</b></span></a>
+  {('<a class="dock-kakao" href="' + esc(KAKAO) + '" target="_blank" rel="noopener">' + icon('talk', 22) + '<span>Kakao</span></a>') if KAKAO else ''}
+  <a class="dock-sms" href="sms:{SMS}">{icon('camera', 21)}<span>Text</span></a>
+</div>
+</body>
+</html>
+'''
+
+
 def write(path, content):
     full = os.path.join(OUT, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
@@ -916,6 +1081,7 @@ def main():
         shutil.rmtree(OUT)
     shutil.copytree(os.path.join(ROOT, 'static'), OUT)
     write('index.html', home())
+    write('en/index.html', en_home())
     write('case/index.html', case_list())
     for c in CASES:
         write(f"case/{c['slug']}/index.html", case_page(c))
@@ -931,7 +1097,7 @@ def main():
                            f'<section class="sec page-head"><div class="wrap narrow"><h1 class="h1">페이지를 찾을 수 없습니다</h1>'
                            f'<p class="lead"><a href="{u("")}">홈으로 가기</a></p>{call_block("급하신가요?", "바로 전화 주세요.")}</div></section>'))
     if INDEX and SITE_URL:
-        urls = [u('')] + ([u('area/')] if LOCALS else []) + [u(f"area/{l['slug']}/") for l in LOCALS] + [u('case/')] + [u(f"case/{c['slug']}/") for c in CASES] + \
+        urls = [u(''), u('en/')] + ([u('area/')] if LOCALS else []) + [u(f"area/{l['slug']}/") for l in LOCALS] + [u('case/')] + [u(f"case/{c['slug']}/") for c in CASES] + \
             ([u('guide/')] + [u(f"guide/{g['slug']}/") for g in GUIDES] if GUIDES else [])
         def _iso(d):
             parts = [p for p in str(d or '').split('-') if p]
@@ -941,7 +1107,7 @@ def main():
         lm = {u(f"case/{c['slug']}/"): LMD.get(f"case/{c['slug']}") or _iso(c.get('updated') or c.get('date')) for c in CASES}
         lm.update({u(f"guide/{g['slug']}/"): LMD.get(f"guide/{g['slug']}") or _iso(g.get('updated') or g.get('date')) for g in GUIDES})
         newest = max([v for v in lm.values() if v] or [''])
-        for x in [u(''), u('case/'), u('guide/'), u('area/')]:
+        for x in [u(''), u('en/'), u('case/'), u('guide/'), u('area/')]:
             lm.setdefault(x, newest)
         sm = ''.join(f'<url><loc>{esc(SITE_URL + x)}</loc>' + (f'<lastmod>{lm[x]}</lastmod>' if lm.get(x) else '') + '</url>' for x in urls)
         write('sitemap.xml', f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{sm}</urlset>')
