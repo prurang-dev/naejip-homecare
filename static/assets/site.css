@@ -541,3 +541,16 @@ picture{display:contents}
 /* 증상 목록의 작은 전화 버튼은 조용하게 (주황 덩어리가 줄지어 보이지 않게) */
 .sy-call{background:#fff!important;color:var(--call)!important;border:1.5px solid #F1C9B3;box-shadow:none!important}
 .sy-call:hover{border-color:var(--call)}
+
+/* 오늘의 설비 이슈 */
+.tags{display:flex;flex-wrap:wrap;gap:6px;align-self:flex-start}
+.tag.issue{background:#FDEBE1;color:var(--call)}
+.case-meta .tag.issue{margin-right:6px}
+.issue-box{margin:26px 0 34px;padding:20px 18px 22px;border:2px solid #F6C7AE;border-radius:var(--radius);background:#FFF8F4}
+.issue-box .h3{margin:0 0 4px}
+.issue-sub{margin:0;color:var(--sub);font-size:15px}
+.issue-box .guide-grid{margin-top:16px}
+.news-card{display:flex;flex-direction:column;gap:4px;margin:14px 0 4px;padding:14px 16px;border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:12px;background:var(--soft);text-decoration:none;color:var(--text)}
+.news-k{font-size:12.5px;font-weight:800;color:var(--call)}
+.news-t{font-size:16.5px;font-weight:800;line-height:1.4}
+.news-s{font-size:13.5px;color:var(--muted)}

@@ -149,6 +149,24 @@ GUIDES = sorted([parse_md(p) for p in glob.glob(os.path.join(ROOT, 'content/guid
                 key=sort_key, reverse=True)
 GUIDE_CAT = {'leak': '누수', 'drain': '하수구·막힘', 'pipe': '배관', 'heating': '난방·보일러배관',
              'bath': '욕실·방수', 'season': '계절 관리', 'cost': '비용·책임'}
+# 시사성 글 표시(2026-11-26 길남): frontmatter issue: <기사 날짜> 가 있으면 '오늘의 설비 이슈' 배지와 목록 칸
+ISSUE_LABEL = '오늘의 설비 이슈'
+ISSUES = [g for g in GUIDES if g.get('issue')]
+
+
+def news_card(g):
+    # 이슈 글 맨 위 기사 카드: 매체·날짜·제목 + 원문 링크(기사 사진은 저작권 때문에 쓰지 않음)
+    if not (g.get('issue') and g.get('issue_url') and g.get('issue_title')):
+        return ''
+    src = ' · '.join(x for x in [g.get('issue_source', ''), g.get('issue', '').replace('-', '.')] if x)
+    return (f'<a class="news-card" href="{esc(g["issue_url"])}" target="_blank" rel="noopener nofollow">'
+            f'<span class="news-k">이 글의 계기가 된 기사</span><span class="news-t">{esc(g["issue_title"])}</span>'
+            f'<span class="news-s">{esc(src)} · 원문 보기 ↗</span></a>')
+
+
+def guide_tags(g):
+    cat = f'<span class="tag">{esc(GUIDE_CAT.get(g.get("category"), "설비 상식"))}</span>'
+    return (f'<span class="tag issue">{ISSUE_LABEL}</span>' + cat) if g.get('issue') else cat
 
 
 # ---------------- icons ----------------
@@ -720,7 +738,7 @@ def guide_card(g):
     img = (f'<span class="guide-img">{pic(thumb, '', '(min-width: 1000px) 360px, (min-width: 640px) 50vw, 100vw')}</span>'
            if os.path.exists(os.path.join(ROOT, 'static', thumb)) else '')
     return f'''<a class="guide-card{' has-img' if img else ''}" href="{u('guide/' + g['slug'] + '/')}">{img}
-  <span class="tag">{esc(GUIDE_CAT.get(g.get('category'), '설비 상식'))}</span>
+  <span class="tags">{guide_tags(g)}</span>
   <span class="guide-title">{esc(g['title'])}</span>
   <span class="guide-desc">{esc(g.get('description', ''))}</span>
 </a>'''
@@ -741,12 +759,16 @@ def guides_home():
 
 
 def guide_list():
+    issue_html = (f'<div class="issue-box"><h2 class="h3">{ISSUE_LABEL}</h2><p class="issue-sub">요즘 뉴스 속 이야기를 우리 집 배관으로 풀어 봅니다.</p>'
+                  f'<div class="guide-grid">{"".join(guide_card(g) for g in ISSUES[:4])}</div></div>'
+                  f'<h2 class="h3">전체 설비 상식</h2>') if ISSUES else ''
     body = f'''
 <section class="sec page-head">
   <div class="wrap">
     <p class="eyebrow">설비 상식</p>
     <h1 class="h1">누수 · 하수구 · 배관, 알아 두면 좋은 것</h1>
     <p class="lead">현장에서 자주 받는 질문을 정리했습니다.</p>
+    {issue_html}
     <div class="guide-grid">{''.join(guide_card(g) for g in GUIDES)}</div>
   </div>
 </section>
@@ -792,9 +814,10 @@ def guide_page(g):
 <article class="sec page-head">
   <div class="wrap narrow">
     <nav class="crumb" aria-label="위치"><a href="{u('')}">홈</a> / <a href="{u('guide/')}">설비 상식</a></nav>
-    <p class="case-meta big"><span class="tag">{esc(GUIDE_CAT.get(g.get('category'), '설비 상식'))}</span></p>
+    <p class="case-meta big">{guide_tags(g)}</p>
     <h1 class="h1">{esc(g['title'])}</h1>
     <p class="byline">글 대표 {esc(B['owner'])} · 설비 {esc(str(B.get('experience_years') or 20))}년 · {esc(g.get('updated') or g.get('date', ''))} · 약 {max(2, round(len(re.sub(r'!?\[[^\]]*\]\([^)]*\)', '', g['body'])) / 600))}분</p>
+    {news_card(g)}
     <div class="answer"><p class="answer-t">먼저 결론</p><p>{esc(g.get('description', ''))}</p></div>
     {cover_html}
     {toc_html(g['body'])}
