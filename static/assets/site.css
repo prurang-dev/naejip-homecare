@@ -522,3 +522,22 @@ picture{display:contents}
 .en-cta{margin-top:26px}
 @media (min-width:760px){.en-svcs{grid-template-columns:1fr 1fr}}
 @media (min-width:960px){.lang-sw{margin-left:12px;margin-right:0}.en .lang-sw{margin-left:auto}.en-hero h1{font-size:44px}}
+
+/* 첫 화면 정리 (2026-11-26 길남): 휴대폰 위쪽 전화 버튼 숨김(하단 바가 대신), 언어 버튼 노출,
+   첫 화면 큰 연락 버튼이 보이는 동안 하단 바 숨김 */
+.lang-sw{min-width:48px;justify-content:center}
+.dock{transition:transform .25s ease}
+.dock.dock-away{transform:translateY(115%)}
+@media (max-width:959px){
+  .top-call{display:none}
+  .top-in .lang-sw{margin-left:auto;margin-right:8px}
+}
+@media (min-width:960px){
+  .top-in .lang-sw{margin-left:16px;margin-right:0;min-height:40px}
+  .en .top-in .lang-sw{margin-left:auto}
+  .top-call{margin-left:10px}
+}
+@media (prefers-reduced-motion:reduce){.dock{transition:none}}
+/* 증상 목록의 작은 전화 버튼은 조용하게 (주황 덩어리가 줄지어 보이지 않게) */
+.sy-call{background:#fff!important;color:var(--call)!important;border:1.5px solid #F1C9B3;box-shadow:none!important}
+.sy-call:hover{border-color:var(--call)}

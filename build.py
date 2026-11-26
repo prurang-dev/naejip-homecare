@@ -249,8 +249,8 @@ def page(title, desc, path, body, og_image=None):
       <a href="{u('case/')}">시공 사례</a>
       {guide_nav}
       {area_nav}
-      <a href="{u('en/')}" hreflang="en" lang="en">English</a>
     </nav>
+    <a class="lang-sw" href="{u('en/')}" hreflang="en" lang="en" aria-label="English">EN</a>
     <a class="top-call" href="tel:{TEL}" aria-label="전화 상담 {esc(B['phone'])}">{icon('phone', 18)}<span>{esc(B['phone'])}</span></a>
     <details class="mnav">
       <summary aria-label="메뉴 열기"><span class="mnav-bars" aria-hidden="true"><i></i><i></i><i></i></span></summary>
@@ -263,7 +263,6 @@ def page(title, desc, path, body, og_image=None):
         {area_nav}
         <a href="{u('')}#area">출동 지역</a>
         <a href="{u('')}#faq">자주 묻는 질문</a>
-        <a href="{u('en/')}" hreflang="en" lang="en">English</a>
       </nav>
     </details>
   </div>
@@ -301,6 +300,7 @@ r.textContent=m===0?'해당하는 항목을 눌러 보세요.':(m>=n?m+'개 해�
   {('<a class="dock-kakao" href="' + esc(KAKAO) + '" target="_blank" rel="noopener">' + icon('talk', 22) + '<span>카톡</span></a>') if KAKAO else ''}
   <a class="dock-sms" href="sms:{SMS}">{icon('camera', 21)}<span>문자</span></a>
 </div>
+<script>(function(){{var c=document.querySelector('.hx-cta'),d=document.querySelector('.dock');if(!c||!d||!('IntersectionObserver' in window))return;new IntersectionObserver(function(e){{d.classList.toggle('dock-away',e[0].isIntersecting)}},{{rootMargin:'0px 0px -90px 0px'}}).observe(c)}})()</script>
 </body>
 </html>
 '''
@@ -1065,6 +1065,7 @@ def en_home():
   {('<a class="dock-kakao" href="' + esc(KAKAO) + '" target="_blank" rel="noopener">' + icon('talk', 22) + '<span>Kakao</span></a>') if KAKAO else ''}
   <a class="dock-sms" href="sms:{SMS}">{icon('camera', 21)}<span>Text</span></a>
 </div>
+<script>(function(){{var c=document.querySelector('.hx-cta'),d=document.querySelector('.dock');if(!c||!d||!('IntersectionObserver' in window))return;new IntersectionObserver(function(e){{d.classList.toggle('dock-away',e[0].isIntersecting)}},{{rootMargin:'0px 0px -90px 0px'}}).observe(c)}})()</script>
 </body>
 </html>
 '''
